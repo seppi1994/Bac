@@ -9,6 +9,7 @@ import {
 import {NodeModel} from "./model/node.model";
 import {Store} from "@ngrx/store";
 import {updateNodes} from "./store/app.actions";
+import {LinkModel} from "./model/link.model";
 
 @Component({
   selector: 'app-root',
@@ -32,17 +33,24 @@ export class AppComponent implements AfterContentInit {
   selectedNode = null;
   selectedLink = null;
 
+  mousedownNode: any;
+  mouseupNode: any;
+
+  dblClickFirstNode: NodeModel | undefined;
+  dblClickSecondNode: NodeModel | undefined;
+
   nodes: NodeModel[] = [
-    {id: 0,  x: 500, y: 100},
-    {id: 1,  x: 200, y: 350},
-    {id: 2,  x: 300, y: 300},
-    {id: 3,  x: 500, y: 300}
+    {id: 0, x: 500, y: 100},
+    {id: 1, x: 200, y: 350},
+    {id: 2, x: 300, y: 300},
+    {id: 3, x: 500, y: 300}
   ];
-  links = [
+  links: LinkModel[] = [
     {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
     {source: this.nodes[1], target: this.nodes[2], left: false, right: true},
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
+
 
   constructor(private store: Store) {
   }
@@ -113,8 +121,8 @@ export class AppComponent implements AfterContentInit {
 
     // update existing nodes (reflexive & selected visual states)
     this.circle.selectAll('circle')
-      .style('fill', (d:any) => (d === this.selectedNode) ? rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
-      .classed('reflexive', (d:any) => d.reflexive);
+      .style('fill', (d: any) => (d === this.selectedNode) ? rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
+      .classed('reflexive', (d: any) => d.reflexive);
 
     // remove old nodes
     this.circle.exit().remove();
@@ -128,7 +136,21 @@ export class AppComponent implements AfterContentInit {
       .attr('r', 12)
       .style('fill', (d: any) => (d === this.selectedNode) ? rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
       .style('stroke', (d: any) => rgb(this.colors(d.id)).darker().toString())
-
+      .on('dblclick', (event, d: NodeModel) => {
+        if(!this.dblClickFirstNode){
+          this.dblClickFirstNode = d;
+        }else {
+          this.dblClickSecondNode = d;
+        }
+        if(this.dblClickFirstNode && this.dblClickSecondNode && this.dblClickFirstNode !== this.dblClickSecondNode){
+          this.links.push({ source: this.dblClickFirstNode , target: this.dblClickSecondNode, left: false, right: true });
+          this.dblClickFirstNode = undefined;
+          this.dblClickSecondNode = undefined;
+          console.log(this.nodes)
+          console.log(this.links)
+          this.restart()
+        }
+      });
 
     // show node IDs
     g.append('svg:text')
@@ -141,7 +163,7 @@ export class AppComponent implements AfterContentInit {
 
     this.circle.call(drag()
       .on('start', this.dragStart)
-      .on('drag', (event, d: any) =>{
+      .on('drag', (event, d: any) => {
         d.x = event.x;
         d.y = event.y;
         this.restart()
@@ -150,10 +172,14 @@ export class AppComponent implements AfterContentInit {
     );
 
 
-
     this.tick();
 
-    this.store.dispatch(updateNodes({ nodes: this.nodes.map(node => ({...node})) }));
+    this.store.dispatch(updateNodes({nodes: this.nodes.map(node => ({...node}))}));
+  }
+
+  resetMouseVars() {
+    this.mousedownNode = null;
+    this.mouseupNode = null;
   }
 
   tick() {
@@ -173,24 +199,24 @@ export class AppComponent implements AfterContentInit {
 
       return `M${sourceX},${sourceY}L${targetX},${targetY}`;
     });
-     this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
+    this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
   }
 
-  dragStart(){
+  dragStart() {
 
 
   }
 
-  dragging(event: D3DragEvent<any, any, any>, d: NodeModel){
+  dragging(event: D3DragEvent<any, any, any>, d: NodeModel) {
     d.x = event.x;
     d.y = event.y;
   }
 
-  dragEnd(){
+  dragEnd() {
 
   }
 
-  addNewNode(){
+  addNewNode() {
     this.nodes.push({id: 7, x: 400, y: 400});
     this.restart();
   }
