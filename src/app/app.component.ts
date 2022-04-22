@@ -7,6 +7,8 @@ import {
   schemeCategory10, select, Selection
 } from 'd3';
 import {NodeModel} from "./model/node.model";
+import {Store} from "@ngrx/store";
+import {updateNodes} from "./store/app.actions";
 
 @Component({
   selector: 'app-root',
@@ -31,10 +33,10 @@ export class AppComponent implements AfterContentInit {
   selectedLink = null;
 
   nodes: NodeModel[] = [
-    {id: 0, reflexive: false, x: 500, y: 100},
-    {id: 1, reflexive: true, x: 200, y: 350},
-    {id: 2, reflexive: false, x: 300, y: 300},
-    {id: 3, reflexive: false, x: 500, y: 300}
+    {id: 0,  x: 500, y: 100},
+    {id: 1,  x: 200, y: 350},
+    {id: 2,  x: 300, y: 300},
+    {id: 3,  x: 500, y: 300}
   ];
   links = [
     {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
@@ -42,18 +44,14 @@ export class AppComponent implements AfterContentInit {
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
 
+  constructor(private store: Store) {
+  }
+
   ngAfterContentInit() {
     this.svg = select('#graphContainer')
       .attr('oncontextmenu', 'return false;')
       .attr('width', this.width)
       .attr('height', this.height);
-
-    // this.force = forceSimulation()
-    // //   .force('link', forceLink().id((d: any) => d.id).distance(150))
-    // //   .force('charge', forceManyBody().strength(-500))
-    // //   .force('x', forceX(this.width / 2))
-    // //   .force('y', forceY(this.height / 2))
-    //   .on('tick', () => this.tick());
 
     this.svg.append('svg:defs').append('svg:marker')
       .attr('id', 'end-arrow')
@@ -90,7 +88,6 @@ export class AppComponent implements AfterContentInit {
   }
 
   restart() {
-
     // path (link) group
     this.path = this.path.data(this.links);
 
@@ -112,7 +109,7 @@ export class AppComponent implements AfterContentInit {
 
     // circle (node) group
     // NB: the function arg is crucial here! nodes are known by id, not by index!
-    this.circle = this.circle.data<{id: number, reflexive: boolean, x: number, y: number}>(this.nodes, (d: any) => d.id);
+    this.circle = this.circle.data<NodeModel>(this.nodes, (d: any) => d.id);
 
     // update existing nodes (reflexive & selected visual states)
     this.circle.selectAll('circle')
@@ -131,7 +128,6 @@ export class AppComponent implements AfterContentInit {
       .attr('r', 12)
       .style('fill', (d: any) => (d === this.selectedNode) ? rgb(this.colors(d.id)).brighter().toString() : this.colors(d.id))
       .style('stroke', (d: any) => rgb(this.colors(d.id)).darker().toString())
-      .classed('reflexive', (d: any) => d.reflexive);
 
 
     // show node IDs
@@ -142,13 +138,6 @@ export class AppComponent implements AfterContentInit {
       .text((d: any) => d.id);
 
     this.circle = g.merge(this.circle);
-
-    // set the graph in motion
-    // this.force
-    //   .nodes(this.nodes)
-    //   .force('link').links(this.links);
-
-    // this.force.alphaTarget(0.3).restart();
 
     this.circle.call(drag()
       .on('start', this.dragStart)
@@ -163,6 +152,8 @@ export class AppComponent implements AfterContentInit {
 
 
     this.tick();
+
+    this.store.dispatch(updateNodes({ nodes: this.nodes.map(node => ({...node})) }));
   }
 
   tick() {
@@ -181,9 +172,7 @@ export class AppComponent implements AfterContentInit {
       const targetY = d.target.y - (targetPadding * normY);
 
       return `M${sourceX},${sourceY}L${targetX},${targetY}`;
-      // return `M${d.source.x},${d.source.y}L${d.target.x},${d.target.y}`;
     });
-
      this.circle.attr('transform', (d) => `translate(${d.x},${d.y})`);
   }
 
@@ -192,16 +181,18 @@ export class AppComponent implements AfterContentInit {
 
   }
 
-  dragging(event: D3DragEvent<any, any, any>, d: any){
-    console.log(this)
+  dragging(event: D3DragEvent<any, any, any>, d: NodeModel){
     d.x = event.x;
     d.y = event.y;
-    console.log(d);
-    console.log(event)
   }
 
   dragEnd(){
 
+  }
+
+  addNewNode(){
+    this.nodes.push({id: 7, x: 400, y: 400});
+    this.restart();
   }
 
 }
