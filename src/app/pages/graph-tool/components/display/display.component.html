@@ -1,0 +1,18 @@
+<svg id="1"
+     width='960px'
+     height="600px"
+     oncontextmenu="return false;"
+     style="background: aqua">
+  <defs>
+    <marker id="end-arrow" viewBox="0 -5 10 10" refX="6" markerWidth="3" markerHeight="3" orient="auto">
+      <path d="M0,-5L10,0L0,5" fill="#000"></path>
+    </marker>
+  </defs>
+  <defs>
+    <marker id="start-arrow" viewBox="0 -5 10 10" refX="4" markerWidth="3" markerHeight="3" orient="auto">
+      <path d="M10,-5L0,0L10,5" fill="#000"></path>
+    </marker>
+  </defs>
+  <g app-node [node]="node" *ngFor="let node of nodes"></g>
+<!--  <g app-edges></g>-->
+</svg>

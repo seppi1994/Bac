@@ -1,5 +1,7 @@
-import {NodeModel} from "../model/node.model";
+import {Node} from "../model/node";
+import {Edge} from "../model/edge";
 
 export interface AppState{
-  nodes: NodeModel[];
+  nodes: Node[];
+  edges: Edge[];
 }

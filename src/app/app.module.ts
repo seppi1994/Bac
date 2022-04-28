@@ -7,10 +7,16 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {appReducer} from "./store/app.reducers";
 import {AppEffects} from "./store/app.effects";
+import { DisplayComponent } from './pages/graph-tool/components/display/display.component';
+import { NodeComponent } from './pages/graph-tool/components/node/node.component';
+import { EdgeComponent } from './pages/graph-tool/components/edge/edge.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    DisplayComponent,
+    NodeComponent,
+    EdgeComponent
   ],
   imports: [
     BrowserModule,

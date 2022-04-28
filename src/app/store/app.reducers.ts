@@ -1,14 +1,19 @@
 import {createReducer, on} from "@ngrx/store";
 import {AppState} from "./app.state";
-import {updateNodes} from "./app.actions";
+import {updateEdges, updateNodes} from "./app.actions";
 
 export const initialState: AppState = {
-  nodes: []
+  nodes:  [],
+  edges: []
 };
 
 export const appReducer = createReducer(
   initialState,
   on(updateNodes, (state, action) => ({
     ...state,
-    nodes : [...action.nodes]
+    nodes: action.nodes
+  })),
+  on(updateEdges, (state, action) => ({
+    ...state,
+    edges: action.edges
   })));
