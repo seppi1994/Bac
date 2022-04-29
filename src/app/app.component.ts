@@ -128,7 +128,7 @@ export class AppComponent implements AfterContentInit {
   //   this.circle.exit().remove();
   //
   //   // add new nodes
-  //   const g = this.circle.enter().append('svg:g').attr('transform', (d: Node) => `translate(${d.x},${d.y})`);
+    //   const g = this.circle.enter().append('svg:g').attr('transform', (d: Node) => `translate(${d.x},${d.y})`);
   //
   //
   //   g.append('svg:circle')

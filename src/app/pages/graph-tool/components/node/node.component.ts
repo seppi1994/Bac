@@ -15,7 +15,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   // nodes$: Observable<Node[]> = this.store.select(fromAppSelectedNodes);
 
-  circle!:Selection<Element, any, any, any>;
+  circle!:Selection<any, any, any, any>;
   @Input()
   public node!: Node;
 
@@ -25,12 +25,13 @@ export class NodeComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
 
-    console.log(this.node)
+    // console.log(this.node)
   }
 
 
   ngAfterViewInit() {
-    this.circle = select('#node' + this.node.id);
+    console.log("ylxc")
+    this.circle = select('#node' + this.node.id).enter().attr('transform', () => `translate(${this.node.x},${this.node.y})`);
     // let circle = select('#node' + this.node.id)
       // .call(drag()
       //   .on('start', this.dragStart)
@@ -44,13 +45,20 @@ export class NodeComponent implements OnInit, AfterViewInit {
       // .on('dblclick', (event) => {
       //
       // })
+    console.log(this.circle)
+    this.circle = this.circle.data<Node>([this.node]);
+
+    // this.circle.enter().append('svg:g').attr('transform', (d: Node) => `translate(${d.x},${d.y})`);
+
+    console.log(this.circle)
     this.circle.call(drag()
       .on('start', this.dragStart)
       .on('drag', (event) => {
-        console.log(event)
-        console.log(this.node.id)
-        this.node.x = event.x;
-        this.node.y = event.y;
+        // console.log(event)
+        // console.log(this.node.id)
+        // this.circle.attr('transform', () => `translate(${event.sourceEvent.pageX},${event.sourceEvent.pageY})`)
+        this.node.x = event.sourceEvent.pageX;
+        this.node.y = event.sourceEvent.pageY;
         // this.node.x = event.x;
         // this.node.y = event.y;
         // console.log('x: ' , event.x)
@@ -63,7 +71,6 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   dragStart() {
 
-    console.log("test")
   }
 
   // dragging(event: D3DragEvent<any, any, any>, d: Node) {
