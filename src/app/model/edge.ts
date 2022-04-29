@@ -5,4 +5,5 @@ export interface Edge {
   target: Node;
   left: boolean;
   right: boolean;
+  constrain: number | string;
 }

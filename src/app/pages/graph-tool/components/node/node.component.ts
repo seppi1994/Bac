@@ -1,5 +1,4 @@
-import {Component, Input, OnInit, AfterViewInit} from '@angular/core';
-import {Store} from "@ngrx/store";
+import {Component, Input, OnInit, AfterViewInit, Output, EventEmitter} from '@angular/core';
 import {Node} from "../../../../model/node";
 import {
   select, drag, Selection
@@ -13,10 +12,14 @@ import {
 export class NodeComponent implements OnInit, AfterViewInit {
 
   circle!:Selection<any, any, any, any>;
+
   @Input()
   public node!: Node;
 
-  constructor(private store: Store) { }
+  @Output()
+  onDoubleClick = new EventEmitter<any>();
+
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -25,7 +28,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.circle = select('#node' + this.node.id);
     this.circle = this.circle.data<Node>([this.node]);
-
+    this.circle.on('dblclick', () => this.onDoubleClick.emit());
     this.circle.call(drag()
       .on('start', this.dragStart)
       .on('drag', (event) => {

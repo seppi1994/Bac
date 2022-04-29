@@ -10,19 +10,27 @@ import {AppEffects} from "./store/app.effects";
 import { DisplayComponent } from './pages/graph-tool/components/display/display.component';
 import { NodeComponent } from './pages/graph-tool/components/node/node.component';
 import { EdgesComponent } from './pages/graph-tool/components/edges/edges.component';
+import {environment} from "../environments/environment";
+import {StoreDevtoolsModule} from "@ngrx/store-devtools";
+import {ParserDisplayComponent} from "./pages/parser/components/parser-display/parser-display.component";
 
 @NgModule({
   declarations: [
     AppComponent,
     DisplayComponent,
     NodeComponent,
-    EdgesComponent
+    EdgesComponent,
+    ParserDisplayComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     StoreModule.forRoot({ app: appReducer }),
     EffectsModule.forRoot([AppEffects]),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: environment.production,
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent]

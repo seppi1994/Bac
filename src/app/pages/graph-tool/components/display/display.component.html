@@ -13,6 +13,7 @@
       <path d="M10,-5L0,0L10,5" fill="#000"></path>
     </marker>
   </defs>
-  <g app-node [node]="node" *ngFor="let node of nodes"></g>
+  <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
   <g app-edges [edges]="edges"></g>
 </svg>
+<button (click)="addNewNode()">new Node</button>
