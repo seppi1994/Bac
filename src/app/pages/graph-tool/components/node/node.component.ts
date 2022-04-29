@@ -31,7 +31,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     console.log("ylxc")
-    this.circle = select('#node' + this.node.id).enter().attr('transform', () => `translate(${this.node.x},${this.node.y})`);
+    this.circle = select('#node' + this.node.id);
     // let circle = select('#node' + this.node.id)
       // .call(drag()
       //   .on('start', this.dragStart)
@@ -54,11 +54,11 @@ export class NodeComponent implements OnInit, AfterViewInit {
     this.circle.call(drag()
       .on('start', this.dragStart)
       .on('drag', (event) => {
-        // console.log(event)
-        // console.log(this.node.id)
+        console.log(event)
+        console.log(this.node.id)
         // this.circle.attr('transform', () => `translate(${event.sourceEvent.pageX},${event.sourceEvent.pageY})`)
-        this.node.x = event.sourceEvent.pageX;
-        this.node.y = event.sourceEvent.pageY;
+        this.node.x = event.sourceEvent.clientX;
+        this.node.y = event.sourceEvent.clientY;
         // this.node.x = event.x;
         // this.node.y = event.y;
         // console.log('x: ' , event.x)
@@ -70,7 +70,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   }
 
   dragStart() {
-
+    console.log("test")
   }
 
   // dragging(event: D3DragEvent<any, any, any>, d: Node) {
