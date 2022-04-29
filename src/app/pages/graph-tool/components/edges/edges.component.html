@@ -1,0 +1,6 @@
+<ng-container *ngFor="let edge of edges">
+  <svg:path class="link" attr.d='{{getPosition(edge)}}'
+            style="marker-end: url(#{{getMarker(edge)}});"></svg:path>
+</ng-container>
+
+<!--<path class="link" d="M490.7813446448315,107.68221279597375L213.05976175315539,339.11686520570385" style="marker-end: url(&quot;#end-arrow&quot;);"></path>-->

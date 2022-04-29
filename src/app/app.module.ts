@@ -9,14 +9,14 @@ import {appReducer} from "./store/app.reducers";
 import {AppEffects} from "./store/app.effects";
 import { DisplayComponent } from './pages/graph-tool/components/display/display.component';
 import { NodeComponent } from './pages/graph-tool/components/node/node.component';
-import { EdgeComponent } from './pages/graph-tool/components/edge/edge.component';
+import { EdgesComponent } from './pages/graph-tool/components/edges/edges.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DisplayComponent,
     NodeComponent,
-    EdgeComponent
+    EdgesComponent
   ],
   imports: [
     BrowserModule,
