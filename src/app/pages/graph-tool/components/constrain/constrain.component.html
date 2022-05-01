@@ -1,0 +1,7 @@
+<ng-container *ngFor="let constrain of constrains">
+  <svg:path id="{{constrain.id}}" class="link" attr.d='{{getPosition(constrain)}}'
+            style="marker-end: url(#{{getMarker(constrain)}});"></svg:path>
+  <svg:text x="15%" dy="-15px" class="id" >
+    <svg:textPath attr.href="#{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
+  </svg:text>
+</ng-container>

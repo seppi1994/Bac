@@ -36,7 +36,7 @@ export class ParserService{
       if (edge.source.id === id) {
         parsingTreeNodes.push({
           parsingNode: {value: edge.target.value,
-                        constrain: edge.constrain,
+                        constrain: 0,
                         nodes: []},
           nodeId: edge.target.id})
         return false;

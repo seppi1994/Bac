@@ -15,6 +15,7 @@
   </defs>
   <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
   <g app-edges [edges]="edges"></g>
+  <g app-constrain [constrains]="constrains"></g>
 </svg>
 <form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">
   <input type="text" name="input" ngModel>

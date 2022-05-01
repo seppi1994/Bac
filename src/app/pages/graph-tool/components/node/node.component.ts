@@ -18,16 +18,6 @@ import * as GLOBALVARIABLES from "../../../../shared/global-variables"
   styleUrls: ['./node.component.scss']
 })
 export class NodeComponent implements OnInit, AfterViewInit {
-  // @ViewChild('input')
-  // input!: ElementRef;
-  //
-  // onInputChanged(){
-  //
-  //   console.log(this.input.nativeElement.innerHTML)
-  //   // if(this.input.nodeValue){
-  //   //   this.node.value = this.input.nodeValue;
-  //   // }
-  // }
 
   circle!:Selection<any, any, any, any>;
 
@@ -64,13 +54,6 @@ export class NodeComponent implements OnInit, AfterViewInit {
     //console.log(this.input.nativeElement.innerHTML)
     //this.input.nativeElement?.addEventListener('keyup', (event: any) => {console.log("test");console.log(event)})
   }
-
-  // values = '';
-  //
-  // onKey(event: KeyboardEvent) {
-  //   console.log("test")
-  //   this.values = (event.target as HTMLInputElement).value;
-  // }
 
   dragStart() {
   }

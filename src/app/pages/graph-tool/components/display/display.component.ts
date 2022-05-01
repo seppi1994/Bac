@@ -5,6 +5,7 @@ import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
 import {updateEdges, updateNodes} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
+import {Constrain} from "../../../../shared/model/constrain";
 
 @Component({
   selector: 'app-display',
@@ -19,22 +20,28 @@ export class DisplayComponent implements OnInit {
   dblClickFirstNode: Node | undefined;
   dblClickSecondNode: Node | undefined;
 
-  // nodes: Node[] = [
-  //   {id: 0, x: 500, y: 100, value:'0'},
-  //   {id: 1, x: 200, y: 350, value:'1'},
-  //   {id: 2, x: 300, y: 300, value:'2'},
-  //   {id: 3, x: 500, y: 300, value:'3'}
-  // ];
-
   nodes: Node[] = [
-    {id: 0, x: 500, y: 500, value: 'S'}
+    {id: 0, x: 500, y: 100, value:'0'},
+    {id: 1, x: 200, y: 350, value:'1'},
+    {id: 2, x: 300, y: 300, value:'2'},
+    {id: 3, x: 500, y: 300, value:'3'}
   ];
-  edges: Edge[] = [];
-  // edges: Edge[] = [
-  //   {source: this.nodes[0], target: this.nodes[1], left: false, right: true, constrain:''},
-  //   {source: this.nodes[1], target: this.nodes[2], left: false, right: true, constrain:''},
-  //   {source: this.nodes[0], target: this.nodes[3], left: false, right: true, constrain:''}
+
+
+  edges: Edge[] = [
+    {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
+    {source: this.nodes[1], target: this.nodes[2], left: false, right: true},
+    {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
+  ];
+  constrains: Constrain[] = [
+    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain:'test'}
+  ];
+
+
+  // nodes: Node[] = [
+  //   {id: 0, x: 500, y: 500, value: 'S'}
   // ];
+  // edges: Edge[] = [];
 
   private nodeId: number = 1;
 
@@ -52,7 +59,7 @@ export class DisplayComponent implements OnInit {
       this.dblClickSecondNode = node;
     }
     if (this.dblClickFirstNode && this.dblClickSecondNode && this.dblClickFirstNode !== this.dblClickSecondNode) {
-      this.edges.push({source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true, constrain:''});
+      this.edges.push({source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true});
       this.store.dispatch(updateEdges({ edges: this.edges.map(edge => ({...edge}))}))
       this.dblClickFirstNode = undefined;
       this.dblClickSecondNode = undefined;

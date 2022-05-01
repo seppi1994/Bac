@@ -14,11 +14,7 @@ import {environment} from "../environments/environment";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {ParserDisplayComponent} from "./pages/parser/components/parser-display/parser-display.component";
 import {FormsModule} from "@angular/forms";
-import { ConditionsComponent } from './pages/graph-tool/components/conditions/conditions.component';
-import { DisplayContitonsComponent } from './pages/graph-tool/components/conditions/display-contitons/display-contitons.component';
-import { SelfContitionComponent } from './pages/graph-tool/components/conditions/self-contition/self-contition.component';
-import { PointToOtherContitionComponent } from './pages/graph-tool/components/conditions/point-to-other-contition/point-to-other-contition.component';
-
+import { ConstrainComponent } from './pages/graph-tool/components/constrain/constrain.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -26,10 +22,7 @@ import { PointToOtherContitionComponent } from './pages/graph-tool/components/co
     NodeComponent,
     EdgesComponent,
     ParserDisplayComponent,
-    ConditionsComponent,
-    DisplayContitonsComponent,
-    SelfContitionComponent,
-    PointToOtherContitionComponent
+    ConstrainComponent
   ],
   imports: [
     BrowserModule,
