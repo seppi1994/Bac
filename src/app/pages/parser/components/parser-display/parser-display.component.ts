@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {ParserService} from "../../service/parser.service";
 
 @Component({
   selector: 'app-parser-display',
@@ -7,9 +8,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ParserDisplayComponent implements OnInit {
 
-  constructor() { }
+  public parsingInput: string = '';
+  public valid: boolean = false;
+
+  constructor(private parsingService: ParserService) { }
 
   ngOnInit(): void {
+  }
+
+  sendTheNewValue(input: string){
+    this.parsingInput = input;
+    this.valid = this.parsingService.parseString(input);
   }
 
 }

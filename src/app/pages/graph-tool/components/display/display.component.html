@@ -16,4 +16,8 @@
   <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
   <g app-edges [edges]="edges"></g>
 </svg>
-<button (click)="addNewNode()">new Node</button>
+<form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">
+  <input type="text" name="input" ngModel>
+  <button type="submit">new Node</button>
+</form>
+

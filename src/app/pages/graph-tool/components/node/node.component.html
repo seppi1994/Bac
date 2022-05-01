@@ -1,5 +1,11 @@
 <svg:g attr.transform="translate({{node.x}},{{node.y}})">
-  <svg:circle id="node{{node.id}}" class="node" r="12" style="fill: white; stroke: rgb(22, 83, 126);"></svg:circle>
-  <svg:text x="-3" y="4" class="id">{{node.id}}</svg:text>
+  <svg:circle id="node{{node.id}}" class="node" attr.r="{{circleRadius}}" style="fill: white; stroke: rgb(22, 83, 126);"></svg:circle>
+<!--  <foreignObject>-->
+<!--    <div xmlns="http://www.w3.org/1999/xhtml">-->
+<!--      <input #circleInput on="onKey(circleInput.value)">-->
+<!--      <p>{{values}}</p>-->
+<!--    </div>-->
+<!--  </foreignObject>-->
+  <text id="text{{node.id}}" x="-3" y="4" class="id" >{{node.value}}</text>
+<!--  <text x="-10" y="-30"> test</text>-->
 </svg:g>
-

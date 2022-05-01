@@ -6,10 +6,10 @@ import {
   scaleOrdinal,
   schemeCategory10, select, Selection
 } from 'd3';
-import {Node} from "./model/node";
+import {Node} from "./shared/model/node";
 import {Store} from "@ngrx/store";
 import {updateNodes} from "./store/app.actions";
-import {Edge} from "./model/edge";
+import {Edge} from "./shared/model/edge";
 
 @Component({
   selector: 'app-root',

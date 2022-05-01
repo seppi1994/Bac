@@ -1,10 +1,9 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Observable, Subscription} from "rxjs";
-import {Edge} from "../../../../model/edge";
-import {Store} from "@ngrx/store";
-import {fromAppSelectedEdges, fromAppSelectedNodes} from "../../../../store/app.selectors";
-import {Node} from "../../../../model/node";
-import {ArrowDirectionEnum} from "../../../../model/arrow-direction.enum";
+import {Edge} from "../../../../shared/model/edge";
+import {Node} from "../../../../shared/model/node";
+import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
+import * as GLOBALVARIABLES from "../../../../shared/global-variables"
+
 
 @Component({
   selector: '[app-edges]',
@@ -18,7 +17,7 @@ export class EdgesComponent implements OnInit {
 
   nodes: Node[] = [];
 
-  constructor(private store: Store) { }
+  constructor() { }
 
   ngOnInit(): void {
   }
@@ -29,8 +28,8 @@ export class EdgesComponent implements OnInit {
     const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
     const normX = deltaX / dist;
     const normY = deltaY / dist;
-    const sourcePadding = edge.left ? 17 : 12;
-    const targetPadding = edge.right ? 17 : 12;
+    const sourcePadding = edge.left ? GLOBALVARIABLES.circleRadius + 5 : GLOBALVARIABLES.circleRadius;
+    const targetPadding = edge.right ? GLOBALVARIABLES.circleRadius + 5 : GLOBALVARIABLES.circleRadius;
     const sourceX = edge.source.x + (sourcePadding * normX);
     const sourceY = edge.source.y + (sourcePadding * normY);
     const targetX = edge.target.x - (targetPadding * normX);

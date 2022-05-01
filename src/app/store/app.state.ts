@@ -1,6 +1,6 @@
-import {Node} from "../model/node";
-import {Edge} from "../model/edge";
-import {ParsingTree} from "../model/parsing-tree";
+import {Node} from "../shared/model/node";
+import {Edge} from "../shared/model/edge";
+import {ParsingTree} from "../shared/model/parsing-tree";
 
 export interface AppState{
   nodes: Node[];

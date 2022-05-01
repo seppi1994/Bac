@@ -13,6 +13,11 @@ import { EdgesComponent } from './pages/graph-tool/components/edges/edges.compon
 import {environment} from "../environments/environment";
 import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {ParserDisplayComponent} from "./pages/parser/components/parser-display/parser-display.component";
+import {FormsModule} from "@angular/forms";
+import { ConditionsComponent } from './pages/graph-tool/components/conditions/conditions.component';
+import { DisplayContitonsComponent } from './pages/graph-tool/components/conditions/display-contitons/display-contitons.component';
+import { SelfContitionComponent } from './pages/graph-tool/components/conditions/self-contition/self-contition.component';
+import { PointToOtherContitionComponent } from './pages/graph-tool/components/conditions/point-to-other-contition/point-to-other-contition.component';
 
 @NgModule({
   declarations: [
@@ -20,17 +25,22 @@ import {ParserDisplayComponent} from "./pages/parser/components/parser-display/p
     DisplayComponent,
     NodeComponent,
     EdgesComponent,
-    ParserDisplayComponent
+    ParserDisplayComponent,
+    ConditionsComponent,
+    DisplayContitonsComponent,
+    SelfContitionComponent,
+    PointToOtherContitionComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    StoreModule.forRoot({ app: appReducer }),
+    StoreModule.forRoot({app: appReducer}),
     EffectsModule.forRoot([AppEffects]),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,
     }),
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

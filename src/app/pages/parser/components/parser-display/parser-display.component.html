@@ -1,0 +1,3 @@
+<input #input (input)="sendTheNewValue(input.value)">
+<div *ngIf="valid" style="color: green">{{parsingInput}}</div>
+<div *ngIf="!valid" style="color: red">{{parsingInput}}</div>
