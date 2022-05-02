@@ -3,7 +3,7 @@ import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {updateEdges, updateNodes} from "../../../../store/app.actions";
+import {updateConstrains, updateEdges, updateNodes} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 
@@ -21,7 +21,7 @@ export class DisplayComponent implements OnInit {
   dblClickSecondNode: Node | undefined;
 
   nodes: Node[] = [
-    {id: 0, x: 500, y: 100, value:'0'},
+    {id: 0, x: 500, y: 100, value:'S'},
     {id: 1, x: 200, y: 350, value:'1'},
     {id: 2, x: 300, y: 300, value:'2'},
     {id: 3, x: 500, y: 300, value:'3'}
@@ -34,7 +34,7 @@ export class DisplayComponent implements OnInit {
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain:'test'}
+    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain: 1}
   ];
 
 
@@ -49,7 +49,8 @@ export class DisplayComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.service.createParsingTree(this.edges);
+    this.service.createParsingTree(this.edges, this.constrains);
+    this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
   }
 
   addNewEdge(node: Node): void {
@@ -63,7 +64,7 @@ export class DisplayComponent implements OnInit {
       this.store.dispatch(updateEdges({ edges: this.edges.map(edge => ({...edge}))}))
       this.dblClickFirstNode = undefined;
       this.dblClickSecondNode = undefined;
-      this.service.createParsingTree(this.edges);
+      this.service.createParsingTree(this.edges, this.constrains);
     }
   }
   addNewNode(input: string) {
