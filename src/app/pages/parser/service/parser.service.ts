@@ -38,10 +38,12 @@ export class ParserService{
     const parsingTreeConstrain = workableConstrains.map(x => ({constrain: x, goalNode: undefined}))
     const parsingTree: ParsingTree = {nodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)};
     // this.store.dispatch(updateParsingTree({parsingTree: parsingTree}));
+    console.log(parsingTree)
     this.parsingTree = parsingTree;
   }
 
   private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[]{
+    // debugger;
     const parsingTreeNodes: {parsingNode: ParsingTreeNode, nodeId: number}[] = [];
 
     edges.filter(edge => {
@@ -50,28 +52,41 @@ export class ParserService{
           parsingNode: {value: edge.target.value,
                         constrain: undefined,
                         parsingTreeNodes: []},
-          nodeId: edge.target.id})
+          nodeId: edge.target.id});
+        // parsingTreeNodes.push({
+        //   parsingNode: {value: edge.source.value,
+        //     constrain: undefined,
+        //     parsingTreeNodes: []},
+        //   nodeId: edge.source.id});
         return false;
       }else {
         return true;
       }
     });
-    let foundConstrainSource = false;
+    let foundConstrainTarget = false;
     const goalConstrainNode: ParsingTreeNode = {
       value: '',
       constrain: undefined,
       parsingTreeNodes: []
     }
     constrainNodes.forEach(constrainNode => {
-      if(constrainNode.constrain.target.id === id){
-
-        // constrainNode.parsingTreeNodes.push(parsingTreeNodes.map(x => x.parsingNode))
-        parsingTreeNodes.forEach(x => goalConstrainNode.parsingTreeNodes.push(x.parsingNode));
-        constrainNode.goalNode = goalConstrainNode;
-        foundConstrainSource = true;
-      }
+      parsingTreeNodes.forEach(parsingTreeNode => {
+        if(constrainNode.constrain.target.id === parsingTreeNode.nodeId){
+          goalConstrainNode.parsingTreeNodes.push(parsingTreeNode.parsingNode);
+          constrainNode.goalNode = goalConstrainNode;
+          // foundConstrainTarget = true;
+        }
+      })
+      // if(constrainNode.constrain.target.id === id){
+      //
+      //   // constrainNode.parsingTreeNodes.push(parsingTreeNodes.map(x => x.parsingNode))
+      //   parsingTreeNodes.forEach(x => goalConstrainNode.parsingTreeNodes.push(x.parsingNode));
+      //   // constrainNode.goalNode = parsingTreeNodes;
+      //   constrainNode.goalNode = goalConstrainNode;
+      //   foundConstrainTarget = true;
+      // }
     });
-
+debugger;
     parsingTreeNodes.forEach(x => x.parsingNode.parsingTreeNodes = this.findNodesRec(x.nodeId, edges, constrainNodes));
     constrainNodes.forEach(constrainNode => {
       if (constrainNode.constrain.source.id === id){
@@ -84,11 +99,12 @@ export class ParserService{
         }
       }
     });
-    if(foundConstrainSource){
-      return [goalConstrainNode];
-    }else {
-      return parsingTreeNodes.map(x => x.parsingNode);
-    }
+    return parsingTreeNodes.map(x => x.parsingNode);
+    // if(foundConstrainTarget){
+    //   return [goalConstrainNode];
+    // }else {
+    //   return parsingTreeNodes.map(x => x.parsingNode);
+    // }
   }
 
   private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean{

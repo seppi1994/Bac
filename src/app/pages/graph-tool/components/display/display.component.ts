@@ -21,20 +21,22 @@ export class DisplayComponent implements OnInit {
   dblClickSecondNode: Node | undefined;
 
   nodes: Node[] = [
-    {id: 0, x: 500, y: 100, value:'S'},
+    {id: 0, x: 500, y: 150, value:'S'},
     {id: 1, x: 200, y: 350, value:'1'},
-    {id: 2, x: 300, y: 300, value:'2'},
-    {id: 3, x: 500, y: 300, value:'3'}
+    {id: 2, x: 200, y: 150, value:'2'},
+    {id: 3, x: 700, y: 300, value:'3'},
+    {id: 4, x: 500, y: 300, value:'4'}
   ];
 
 
   edges: Edge[] = [
     {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
     {source: this.nodes[1], target: this.nodes[2], left: false, right: true},
+    {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain: 2}
+    {id: 0, source: this.nodes[2], target: this.nodes[1], left: false, right: true, constrain: 1}
   ];
 
 

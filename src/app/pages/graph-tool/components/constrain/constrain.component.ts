@@ -39,6 +39,13 @@ export class ConstrainComponent implements OnInit {
     return `M${sourceX},${sourceY}A${dist},${dist},0,0,1${targetX},${targetY}`;
   }
 
+  public getTextX(edge: Edge){
+    const deltaX = edge.target.x - edge.source.x;
+    const deltaY = edge.target.y - edge.source.y
+    const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+    return `${dist/2}px`;
+  }
+
   public getMarker(edge: Edge): string{
     if (edge.right){
       return ArrowDirectionEnum.endArrow;
