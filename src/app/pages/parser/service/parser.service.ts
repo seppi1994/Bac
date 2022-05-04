@@ -85,8 +85,6 @@ export class ParserService{
       }
     });
     if(foundConstrainSource){
-      console.log("goal: ")
-      console.log(goalConstrainNode)
       return [goalConstrainNode];
     }else {
       return parsingTreeNodes.map(x => x.parsingNode);
@@ -94,39 +92,27 @@ export class ParserService{
   }
 
   private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean{
-
+    // debugger;
     const slicedParsingString = parsString.slice(0, parsingTreeNode.value.length);
-    console.log(slicedParsingString)
     if(slicedParsingString === parsingTreeNode.value){
-      // console.log("first if")
-      parsingTreeNode.parsingTreeNodes.filter(x => x.constrain !== 0)
+      parsingTreeNode.parsingTreeNodes = parsingTreeNode.parsingTreeNodes.filter(x => x.constrain !== 0)
       const boolArray = parsingTreeNode.parsingTreeNodes.map(x => {
-        console.log(x)
-        // @ts-ignore
-        if(!isNaN(x.constrain) && x.constrain !== 0){
-          console.log("constrain: " + x.constrain)
-          console.log("1111111111111111111")
-          // @ts-ignore
+
+        if(typeof x.constrain ==="number" && x.constrain !== 0){
+
           x.constrain--;
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
-        // @ts-ignore
-        if(isNaN(x.constrain)){
-          console.log("22222222222222222222222")
+        if(typeof x.constrain !=="number"){
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
-        console.log("constrain map: " + x.constrain)
         return undefined;
       });
-      if((parsString.length === parsingTreeNode.value.length) && (boolArray)){
-        return true;
-      }
+      // if((parsString.length === parsingTreeNode.value.length) && (boolArray)){
+      //   return true;
+      // }
       const result = boolArray.find(x => x)
-      console.log("result: " + result)
-      console.log("parsstring: " + parsString)
-      console.log("trennode: " + parsingTreeNode.value)
       if (result || ((parsString.length === parsingTreeNode.value.length) && (boolArray.length === 0))){
-        console.log("nice")
           return true;
       }
     }

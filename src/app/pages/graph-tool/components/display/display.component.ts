@@ -3,7 +3,7 @@ import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {updateConstrains, updateEdges, updateNodes} from "../../../../store/app.actions";
+import {updateEdges, updateNodes} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 
@@ -34,7 +34,7 @@ export class DisplayComponent implements OnInit {
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain: 1}
+    {id: 0, source: this.nodes[2], target: this.nodes[0], left: false, right: true, constrain: 2}
   ];
 
 
@@ -50,7 +50,7 @@ export class DisplayComponent implements OnInit {
 
   ngOnInit(): void {
     this.service.createParsingTree(this.edges, this.constrains);
-    this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
+    // this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
   }
 
   addNewEdge(node: Node): void {
