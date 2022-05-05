@@ -36,7 +36,7 @@ export class DisplayComponent implements OnInit {
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[1], left: false, right: true, constrain: 1}
+    {id: 0, source: this.nodes[2], target: this.nodes[1], left: false, right: true, constrain: 2}
   ];
 
 

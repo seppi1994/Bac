@@ -36,7 +36,8 @@ export class ConstrainComponent implements OnInit {
     // }else {
     //   return `M${targetX},${targetY}A${dist},${dist},0,0,1${sourceX},${sourceY}`;
     // }
-    return `M${sourceX},${sourceY}A${dist},${dist},0,0,1${targetX},${targetY}`;
+    return `M${targetX},${targetY}A${dist},${dist},0,0,1${sourceX},${sourceY}`;
+    // return `M${sourceX},${sourceY}A${dist},${dist},0,0,1${targetX},${targetY}`;
   }
 
   public getTextX(edge: Edge){
@@ -48,10 +49,10 @@ export class ConstrainComponent implements OnInit {
 
   public getMarker(edge: Edge): string{
     if (edge.right){
-      return ArrowDirectionEnum.endArrow;
+      return ArrowDirectionEnum.startArrow;
     }
     if (edge.left){
-      return ArrowDirectionEnum.startArrow;
+      return ArrowDirectionEnum.endArrow;
     }
     return '';
   }

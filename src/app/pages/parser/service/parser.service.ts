@@ -1,13 +1,10 @@
 import {Injectable} from "@angular/core";
 import {Edge} from "../../../shared/model/edge";
-import {Node} from "../../../shared/model/node";
 import {ParsingTreeNode} from "../model/parsing-tree-node";
 import {ParsingTree} from "../model/parsing-tree";
 import {Store} from "@ngrx/store";
-import {updateParsingTree} from "../../../store/app.actions";
 import {Constrain} from "../../../shared/model/constrain";
 import {ConstrainNode} from "../model/constrain-node";
-import {fromAppSelectedConstrains, fromAppSelectedEdges, fromAppSelectedNodes} from "../../../store/app.selectors";
 
 @Injectable({
   providedIn: 'root',
@@ -43,7 +40,6 @@ export class ParserService{
   }
 
   private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[]{
-    // debugger;
     const parsingTreeNodes: {parsingNode: ParsingTreeNode, nodeId: number}[] = [];
 
     edges.filter(edge => {
@@ -63,7 +59,6 @@ export class ParserService{
         return true;
       }
     });
-    let foundConstrainTarget = false;
     const goalConstrainNode: ParsingTreeNode = {
       value: '',
       constrain: undefined,
@@ -74,19 +69,9 @@ export class ParserService{
         if(constrainNode.constrain.target.id === parsingTreeNode.nodeId){
           goalConstrainNode.parsingTreeNodes.push(parsingTreeNode.parsingNode);
           constrainNode.goalNode = goalConstrainNode;
-          // foundConstrainTarget = true;
         }
       })
-      // if(constrainNode.constrain.target.id === id){
-      //
-      //   // constrainNode.parsingTreeNodes.push(parsingTreeNodes.map(x => x.parsingNode))
-      //   parsingTreeNodes.forEach(x => goalConstrainNode.parsingTreeNodes.push(x.parsingNode));
-      //   // constrainNode.goalNode = parsingTreeNodes;
-      //   constrainNode.goalNode = goalConstrainNode;
-      //   foundConstrainTarget = true;
-      // }
     });
-debugger;
     parsingTreeNodes.forEach(x => x.parsingNode.parsingTreeNodes = this.findNodesRec(x.nodeId, edges, constrainNodes));
     constrainNodes.forEach(constrainNode => {
       if (constrainNode.constrain.source.id === id){
@@ -100,11 +85,6 @@ debugger;
       }
     });
     return parsingTreeNodes.map(x => x.parsingNode);
-    // if(foundConstrainTarget){
-    //   return [goalConstrainNode];
-    // }else {
-    //   return parsingTreeNodes.map(x => x.parsingNode);
-    // }
   }
 
   private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean{
