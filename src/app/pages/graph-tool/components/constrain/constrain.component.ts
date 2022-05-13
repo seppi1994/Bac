@@ -14,12 +14,13 @@ export class ConstrainComponent implements OnInit {
   @Input()
   constrains!: Constrain[];
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
 
-  public getPosition(edge: Edge): string{
+  public getPosition(edge: Edge): string {
     const deltaX = edge.target.x - edge.source.x;
     const deltaY = edge.target.y - edge.source.y;
     const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
@@ -40,20 +41,53 @@ export class ConstrainComponent implements OnInit {
     // return `M${sourceX},${sourceY}A${dist},${dist},0,0,1${targetX},${targetY}`;
   }
 
-  public getTextX(edge: Edge){
+  public getSelfPosition(edge: Edge) {
+
+  }
+
+  public getTextX(edge: Edge) {
     const deltaX = edge.target.x - edge.source.x;
     const deltaY = edge.target.y - edge.source.y
     const dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
-    return `${dist/2}px`;
+    return `${dist / 2}px`;
   }
 
-  public getMarker(edge: Edge): string{
-    if (edge.right){
+  public getMarker(edge: Edge): string {
+    if (edge.right) {
       return ArrowDirectionEnum.startArrow;
     }
-    if (edge.left){
+    if (edge.left) {
       return ArrowDirectionEnum.endArrow;
     }
     return '';
+  }
+
+  public getTextSelf(){
+    return `56`;
+  }
+
+  public getSelfEdge(edge: Edge) {
+    const offset = Math.sqrt((Math.pow(GLOBALVARIABLES.circleRadius,2)/2))
+    const arrowLength = 6
+    const x1 = edge.source.x + offset
+    const y1 = edge.source.y - offset
+    const y2 = edge.target.y - offset - arrowLength
+    const x2 = edge.target.x - offset
+
+    // Change sweep to change orientation of loop.
+    const sweep = 1; // 1 or 0
+
+    // Fiddle with this angle to get loop oriented.
+    const xRotation = 90;
+
+    // Needs to be 1.
+    const largeArc = 1;
+
+    // Make drx and dry different to get an ellipse
+    // instead of a circle.
+    const drx = 32;
+    const dry = 24;
+
+    return "M" + x2 + "," + y2 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x1 + "," + y1;
   }
 }

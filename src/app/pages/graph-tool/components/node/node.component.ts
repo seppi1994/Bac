@@ -37,22 +37,30 @@ export class NodeComponent implements OnInit, AfterViewInit {
     this.circle = select('#node' + this.node.id);
     this.circle = this.circle.data<Node>([this.node]);
     this.circle.on('dblclick', () => this.onDoubleClick.emit());
+
+    // const g = select('#g' + this.node.id).append("foreignObject")
+    //   .attr("width", 48)
+    //   .attr("height", 24)
+    //   .attr('x', -19)
+    //   .attr( 'y', -10)
+    //   .append("xhtml:body")
+    //   .attr('xmlns','http://www.w3.org/1999/xhtml')
+    //   .html("<input type='text' class='input' value='2' />")
+    //   .on("mousedown", (event) => { event.stopImmediatePropagation(); })
+    //   .on("mousemove", (event) => { event.stopImmediatePropagation(); });
+
     this.circle.call(drag()
       .on('start', this.dragStart)
       .on('drag', (event) => {
-        this.node.x = event.sourceEvent.offsetX;
-        this.node.y = event.sourceEvent.offsetY;
+        // Just a Quickfix. Target of mouseevent is switching between input and svg but should stay at svg
+        if(!event.sourceEvent.target.value){
+          this.node.x = event.sourceEvent.offsetX;
+          this.node.y = event.sourceEvent.offsetY;
+        }
       })
       .on('end', this.dragEnd));
-    // select('#text' + this.node.id)
-    //   .on("keyup", (event, d) =>  { console.log(event);console.log(d)});
-    // this.circle
-    //   .append("text")
-    //   .attr("contentEditable", true)
-    //   .text(this.node.value)
-    //   .on("keyup", (event, d) =>  { console.log(event);this.node.value = d});
-    //console.log(this.input.nativeElement.innerHTML)
-    //this.input.nativeElement?.addEventListener('keyup', (event: any) => {console.log("test");console.log(event)})
+
+
   }
 
   dragStart() {
@@ -63,5 +71,10 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   get circleRadius(){
     return GLOBALVARIABLES.circleRadius;
+  }
+
+  public changeNodeValue(input: string){
+    console.log(input)
+    this.node.value = input;
   }
 }

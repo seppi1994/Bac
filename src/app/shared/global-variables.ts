@@ -1,1 +1,1 @@
-export const circleRadius: number = 24;
+export const circleRadius: number = 30;

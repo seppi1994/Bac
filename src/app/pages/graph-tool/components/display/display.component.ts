@@ -36,7 +36,7 @@ export class DisplayComponent implements OnInit {
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[1], left: false, right: true, constrain: 2}
+    {id: 0, source: this.nodes[2], target: this.nodes[2], left: false, right: true, constrain: 2}
   ];
 
 
@@ -72,7 +72,7 @@ export class DisplayComponent implements OnInit {
   addNewNode(input: string) {
       this.nodes.push({id: this.nodeId, x: 400, y: 400, value: input});
       this.nodeId++;
-      this.store.dispatch(updateNodes({ nodes: this.nodes.map(node=> ({...node}))}))
+      // this.store.dispatch(updateNodes({ nodes: this.nodes.map(node=> ({...node}))}))
     }
 
 }
