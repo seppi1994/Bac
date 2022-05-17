@@ -9,31 +9,53 @@ import {ConstrainNode} from "../model/constrain-node";
 @Injectable({
   providedIn: 'root',
 })
-export class ParserService{
+export class ParserService {
 
   private parsingTree!: ParsingTree;
   private _constrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = [];
   constrains!: Constrain[];
   edges!: Edge[];
 
+  private _constrainVariableCount: { constrainId: number; constrainVariable: string; count: number }[] = [];
+
   constructor(private store: Store) {
   }
 
-  public parseString(parseString: string): boolean{
+  public parseString(parseString: string): boolean {
     // this.store.select(fromAppSelectedConstrains).subscribe(x => this.constrains = x);
     // this.store.select(fromAppSelectedEdges).subscribe(x => this.edges = x);
+    this._constrainVariableCount = [];
+    this.constrains.forEach(constrain => {
+      if (typeof constrain.constrain === "string") {
+        this._constrainVariableCount.push({
+          constrainId: constrain.id,
+          constrainVariable: constrain.constrain,
+          count: 0
+        });
+      }
+    });
     this.createParsingTree(this.edges, this.constrains);
     const boolArray = this.parsingTree?.nodes.map(x => this.parsingRecursion(x, parseString));
     let result = boolArray.find(x => x);
     this._constrains.forEach(constrain => {
-      if(typeof constrain.parsingTreeNode.constrain === "number" && constrain.parsingTreeNode.constrain !== 0 && constrain.parsingTreeNode.constrain !== constrain.origConstrain){
+      if (typeof constrain.parsingTreeNode.constrain === "number" && constrain.parsingTreeNode.constrain !== 0 && constrain.parsingTreeNode.constrain !== constrain.origConstrain) {
         result = false;
       }
     });
+    for (let i = 0; i < this._constrainVariableCount.length - 1; i++) {
+      for (let j = i; j < this._constrainVariableCount.length; j++) {
+        if (this._constrainVariableCount[i].constrainVariable === this._constrainVariableCount[j].constrainVariable) {
+          if (this._constrainVariableCount[i].count !== this._constrainVariableCount[j].count) {
+            return false;
+          }
+        }
+      }
+    }
+    debugger
     return result ? result : false;
   }
 
-  public createParsingTree(edges: Edge[], constrains: Constrain[]): void{
+  public createParsingTree(edges: Edge[], constrains: Constrain[]): void {
     this._constrains = [];
     this.constrains = constrains;
     this.edges = edges;
@@ -46,18 +68,21 @@ export class ParserService{
     this.parsingTree = parsingTree;
   }
 
-  private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[]{
-    const parsingTreeNodes: {parsingNode: ParsingTreeNode, nodeId: number}[] = [];
+  private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[] {
+    const parsingTreeNodes: { parsingNode: ParsingTreeNode, nodeId: number }[] = [];
 
     edges.filter(edge => {
       if (edge.source.id === id) {
         parsingTreeNodes.push({
-          parsingNode: {value: edge.target.value,
-                        constrain: undefined,
-                        parsingTreeNodes: []},
-          nodeId: edge.target.id});
+          parsingNode: {
+            value: edge.target.value,
+            constrain: undefined,
+            parsingTreeNodes: []
+          },
+          nodeId: edge.target.id
+        });
         return false;
-      }else {
+      } else {
         return true;
       }
     });
@@ -68,7 +93,7 @@ export class ParserService{
     }
     constrainNodes.forEach(constrainNode => {
       parsingTreeNodes.forEach(parsingTreeNode => {
-        if(constrainNode.constrain.target.id === parsingTreeNode.nodeId){
+        if (constrainNode.constrain.target.id === parsingTreeNode.nodeId) {
           goalConstrainNode.parsingTreeNodes.push(parsingTreeNode.parsingNode);
           constrainNode.goalNode = goalConstrainNode;
         }
@@ -76,13 +101,28 @@ export class ParserService{
     });
     parsingTreeNodes.forEach(x => x.parsingNode.parsingTreeNodes = this.findNodesRec(x.nodeId, edges, constrainNodes));
     constrainNodes.forEach(constrainNode => {
-      if (constrainNode.constrain.source.id === id){
-        if (constrainNode.goalNode){
-          const parsingNode:ParsingTreeNode = {value: '', constrain: constrainNode.constrain.constrain, parsingTreeNodes: [constrainNode.goalNode]};
+      if (constrainNode.constrain.source.id === id) {
+        if (constrainNode.goalNode) {
+          let parsingNode!: ParsingTreeNode;
+          if (typeof constrainNode.constrain.constrain === "string") {
+            parsingNode = {
+              value: '',
+              constrain: {variable: constrainNode.constrain.constrain, id: constrainNode.constrain.id},
+              parsingTreeNodes: [constrainNode.goalNode]
+            };
+          } else {
+            parsingNode = {
+              value: '',
+              constrain: constrainNode.constrain.constrain,
+              parsingTreeNodes: [constrainNode.goalNode]
+            };
+          }
+
 
           parsingTreeNodes.push({
             parsingNode: parsingNode,
-            nodeId: 0});
+            nodeId: 0
+          });
 
           this._constrains.push({parsingTreeNode: parsingNode, origConstrain: parsingNode.constrain});
         }
@@ -91,28 +131,38 @@ export class ParserService{
     return parsingTreeNodes.map(x => x.parsingNode);
   }
 
-  private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean{
+  private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean {
     const slicedParsingString = parsString.slice(0, parsingTreeNode.value.length);
-    if(slicedParsingString === parsingTreeNode.value){
+    if (slicedParsingString === parsingTreeNode.value) {
       parsingTreeNode.parsingTreeNodes = parsingTreeNode.parsingTreeNodes.filter(x => x.constrain !== 0)
-      const boolArray = parsingTreeNode.parsingTreeNodes.map(x => {
+      const boolArray = parsingTreeNode.parsingTreeNodes.map((x: ParsingTreeNode) => {
 
-        if(typeof x.constrain ==="number" && x.constrain !== 0){
-
+        if (typeof x.constrain === "number" && x.constrain !== 0) {
           x.constrain--;
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
-        if(typeof x.constrain !=="number"){
+        if (typeof x.constrain !== "number" && x.constrain) {
+          this._constrainVariableCount.forEach(constrainVariable => {
+            // @ts-ignore
+            if (x.constrain.id === constrainVariable.constrainId) {
+              constrainVariable.count++;
+            }
+          });
+          if (parsString.slice(slicedParsingString.length, parsString.length).length === 0) {
+            return true;
+          }
+          return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
+        }
+
+        if (typeof x.constrain !== "number") {
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
         return undefined;
       });
-      // if((parsString.length === parsingTreeNode.value.length) && (boolArray)){
-      //   return true;
-      // }
+
       const result = boolArray.find(x => x)
-      if (result || ((parsString.length === parsingTreeNode.value.length) && (boolArray.length === 0))){
-          return true;
+      if (result || ((parsString.length === parsingTreeNode.value.length) && (boolArray.length === 0))) {
+        return true;
       }
     }
     return false;

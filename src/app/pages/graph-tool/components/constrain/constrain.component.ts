@@ -64,7 +64,9 @@ export class ConstrainComponent implements OnInit {
 
   public getTextSelf(){
     return `56`;
+    // return `100`;
   }
+
 
   public getSelfEdge(edge: Edge) {
     const offset = Math.sqrt((Math.pow(GLOBALVARIABLES.circleRadius,2)/2))

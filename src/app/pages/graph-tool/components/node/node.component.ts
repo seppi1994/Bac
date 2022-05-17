@@ -46,8 +46,8 @@ export class NodeComponent implements OnInit, AfterViewInit {
     //   .append("xhtml:body")
     //   .attr('xmlns','http://www.w3.org/1999/xhtml')
     //   .html("<input type='text' class='input' value='2' />")
-    //   .on("mousedown", (event) => { event.stopImmediatePropagation(); })
-    //   .on("mousemove", (event) => { event.stopImmediatePropagation(); });
+    //   .on("mousedown", (event) => { event.stopPropagation(); })
+    //   .on("mousemove", (event) => { event.stopPropagation(); });
 
     this.circle.call(drag()
       .on('start', this.dragStart)
@@ -74,7 +74,6 @@ export class NodeComponent implements OnInit, AfterViewInit {
   }
 
   public changeNodeValue(input: string){
-    console.log(input)
     this.node.value = input;
   }
 }

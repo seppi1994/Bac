@@ -3,7 +3,7 @@ import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {updateEdges, updateNodes} from "../../../../store/app.actions";
+import {updateEdges} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 
@@ -21,22 +21,25 @@ export class DisplayComponent implements OnInit {
   dblClickSecondNode: Node | undefined;
 
   nodes: Node[] = [
-    {id: 0, x: 500, y: 150, value:'S'},
-    {id: 1, x: 200, y: 350, value:'1'},
-    {id: 2, x: 200, y: 150, value:'2'},
-    {id: 3, x: 700, y: 300, value:'3'},
-    {id: 4, x: 500, y: 300, value:'4'}
+    {id: 0, x: 200, y: 225, value:'S'},
+    {id: 1, x: 450, y: 150, value:'1'},
+    {id: 2, x: 700, y: 150, value:'2'},
+    {id: 3, x: 450, y: 300, value:'3'}
+    // {id: 4, x: 500, y: 300, value:'4'}
   ];
 
 
   edges: Edge[] = [
     {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
     {source: this.nodes[1], target: this.nodes[2], left: false, right: true},
-    {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
+    // {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
     {source: this.nodes[0], target: this.nodes[3], left: false, right: true}
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[2], target: this.nodes[2], left: false, right: true, constrain: 2}
+    {id: 0, source: this.nodes[2], target: this.nodes[2], left: false, right: true, constrain: 'n'},
+    {id: 1, source: this.nodes[1], target: this.nodes[1], left: false, right: true, constrain: 'n'},
+    {id: 2, source: this.nodes[3], target: this.nodes[3], left: false, right: true, constrain: 'm'}
+
   ];
 
 

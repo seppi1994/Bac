@@ -1,16 +1,16 @@
 <ng-container *ngFor="let constrain of constrains">
   <ng-container *ngIf="constrain.source.id !== constrain.target.id; else elseBlock">
-    <svg:path id="{{constrain.id}}" class="link" attr.d='{{getPosition(constrain)}}'
+    <svg:path id="path{{constrain.id}}" class="link" attr.d='{{getPosition(constrain)}}'
               style="marker-start: url(#{{getMarker(constrain)}});"></svg:path>
     <svg:text attr.x="{{getTextX(constrain)}}" dy="-15px" class="id" >
-      <svg:textPath attr.href="#{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
+      <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
     </svg:text>
   </ng-container>
   <ng-template #elseBlock>
-    <svg:path id="{{constrain.id}}" class="link" attr.d='{{getSelfEdge(constrain)}}'
+    <svg:path id="path{{constrain.id}}" class="link" attr.d='{{getSelfEdge(constrain)}}'
               style="marker-start: url(#{{getMarker(constrain)}});"></svg:path>
     <svg:text attr.x="{{getTextSelf()}}" dy="-15px" class="id" >
-      <svg:textPath attr.href="#{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
+      <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
     </svg:text>
   </ng-template>
 </ng-container>
