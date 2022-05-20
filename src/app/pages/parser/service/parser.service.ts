@@ -2,9 +2,9 @@ import {Injectable} from "@angular/core";
 import {Edge} from "../../../shared/model/edge";
 import {ParsingTreeNode} from "../model/parsing-tree-node";
 import {ParsingTree} from "../model/parsing-tree";
-import {Store} from "@ngrx/store";
 import {Constrain} from "../../../shared/model/constrain";
 import {ConstrainNode} from "../model/constrain-node";
+import {NonTerminalNode} from "../../../shared/model/non-terminal-node";
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +15,11 @@ export class ParserService {
   private _constrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = [];
   constrains!: Constrain[];
   edges!: Edge[];
+  nonTerminals!: NonTerminalNode[];
 
   private _constrainVariableCount: { constrainId: number; constrainVariable: string; count: number }[] = [];
 
-  constructor(private store: Store) {
+  constructor() {
   }
 
   public parseString(parseString: string): boolean {
@@ -34,7 +35,7 @@ export class ParserService {
         });
       }
     });
-    this.createParsingTree(this.edges, this.constrains);
+    this.parsingTree = this.createParsingTree(this.edges, this.constrains, this.nonTerminals);
     const boolArray = this.parsingTree?.nodes.map(x => this.parsingRecursion(x, parseString));
     let result = boolArray.find(x => x);
     this._constrains.forEach(constrain => {
@@ -51,36 +52,53 @@ export class ParserService {
         }
       }
     }
-    debugger
     return result ? result : false;
   }
 
-  public createParsingTree(edges: Edge[], constrains: Constrain[]): void {
+  public createParsingTree(edges: Edge[], constrains: Constrain[], nonTerminals: NonTerminalNode[]): ParsingTree {
     this._constrains = [];
     this.constrains = constrains;
     this.edges = edges;
+    this.nonTerminals = nonTerminals;
     const workableEdges = edges.map(edge => ({...edge}));
+    console.log(workableEdges)
+    for (let i = 0; i < nonTerminals.length; i += 3) {
+      // workableEdges.push({source: nonTerminals[i], target: nonTerminals[i+1]});
+      console.log(nonTerminals[0])
+      workableEdges.map(edge => {
+        if("name" in edge.target){
+          if(edge.target.id === nonTerminals[i].id){
+            edge.target = nonTerminals[i + 1];
+          }
+        }
+        if("name" in edge.source){
+          if(edge.source.id === nonTerminals[i].id){
+            edge.source = nonTerminals[i + 2];
+          }
+        }
+      })
+    }
+    // console.log(workableEdges)
     const workableConstrains = constrains.map(constrain => ({...constrain}));
     const parsingTreeConstrain = workableConstrains.map(x => ({constrain: x, goalNode: undefined}))
     const parsingTree: ParsingTree = {nodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)};
     // this.store.dispatch(updateParsingTree({parsingTree: parsingTree}));
     console.log(parsingTree)
-    this.parsingTree = parsingTree;
+    // this.parsingTree = parsingTree;
+    return parsingTree;
   }
 
   private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[] {
+    // debugger
     const parsingTreeNodes: { parsingNode: ParsingTreeNode, nodeId: number }[] = [];
 
-    edges.filter(edge => {
+    edges = edges.filter(edge => {
       if (edge.source.id === id) {
-        parsingTreeNodes.push({
-          parsingNode: {
-            value: edge.target.value,
-            constrain: undefined,
-            parsingTreeNodes: []
-          },
-          nodeId: edge.target.id
-        });
+        if("value" in edge.target){
+          parsingTreeNodes.push({parsingNode: {value: edge.target.value, constrain: undefined, parsingTreeNodes: []}, nodeId: edge.target.id});
+        } else {
+          parsingTreeNodes.push({parsingNode: {value: '', constrain: undefined, parsingTreeNodes: []}, nodeId: edge.target.id});
+        }
         return false;
       } else {
         return true;
@@ -105,25 +123,11 @@ export class ParserService {
         if (constrainNode.goalNode) {
           let parsingNode!: ParsingTreeNode;
           if (typeof constrainNode.constrain.constrain === "string") {
-            parsingNode = {
-              value: '',
-              constrain: {variable: constrainNode.constrain.constrain, id: constrainNode.constrain.id},
-              parsingTreeNodes: [constrainNode.goalNode]
-            };
+              parsingNode = {value: '', constrain: {variable: constrainNode.constrain.constrain, id: constrainNode.constrain.id}, parsingTreeNodes: [constrainNode.goalNode]};
           } else {
-            parsingNode = {
-              value: '',
-              constrain: constrainNode.constrain.constrain,
-              parsingTreeNodes: [constrainNode.goalNode]
-            };
+            parsingNode = {value: '', constrain: constrainNode.constrain.constrain, parsingTreeNodes: [constrainNode.goalNode]};
           }
-
-
-          parsingTreeNodes.push({
-            parsingNode: parsingNode,
-            nodeId: 0
-          });
-
+          parsingTreeNodes.push({parsingNode: parsingNode, nodeId: 0});
           this._constrains.push({parsingTreeNode: parsingNode, origConstrain: parsingNode.constrain});
         }
       }
@@ -148,9 +152,10 @@ export class ParserService {
               constrainVariable.count++;
             }
           });
-          if (parsString.slice(slicedParsingString.length, parsString.length).length === 0) {
-            return true;
-          }
+          // if (parsString.slice(slicedParsingString.length, parsString.length).length === 0) {
+          //   console.log(1)
+          //   // return true;
+          // }
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
 
@@ -164,7 +169,20 @@ export class ParserService {
       if (result || ((parsString.length === parsingTreeNode.value.length) && (boolArray.length === 0))) {
         return true;
       }
+      // parsingTreeNode.parsingTreeNodes.forEach(node => {
+      //   if("value" in node && node.value === "endNode"){
+      //     return true;
+      //   }
+      // })
+      // debugger
+      // const result = parsingTreeNode.parsingTreeNodes.find(node => {
+      //   return node.value === "endNode";
+      // });
+      // if(result){
+      //   return true;
+      // }
     }
     return false;
   }
+
 }

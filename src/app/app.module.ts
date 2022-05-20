@@ -15,6 +15,8 @@ import {StoreDevtoolsModule} from "@ngrx/store-devtools";
 import {ParserDisplayComponent} from "./pages/parser/components/parser-display/parser-display.component";
 import {FormsModule} from "@angular/forms";
 import { ConstrainComponent } from './pages/graph-tool/components/constrain/constrain.component';
+import { NonTerminalNodeComponent } from './pages/graph-tool/components/node/non-terminal-node/non-terminal-node.component';
+import { EndNodeComponent } from './pages/graph-tool/components/node/end-node/end-node.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -22,7 +24,9 @@ import { ConstrainComponent } from './pages/graph-tool/components/constrain/cons
     NodeComponent,
     EdgesComponent,
     ParserDisplayComponent,
-    ConstrainComponent
+    ConstrainComponent,
+    NonTerminalNodeComponent,
+    EndNodeComponent
   ],
   imports: [
     BrowserModule,
