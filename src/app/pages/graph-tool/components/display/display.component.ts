@@ -3,7 +3,7 @@ import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {nodeClicked, updateEdges} from "../../../../store/app.actions";
+import {elementClicked, updateEdges} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 import {NonTerminalNode} from "../../../../shared/model/non-terminal-node";
@@ -11,7 +11,7 @@ import {EndNode} from "../../../../shared/model/end-node";
 import {ExampleGeneratorService} from "../../../exaple-generator/service/example-generator.service";
 import {Element} from "@angular/compiler";
 import {Subscription} from "rxjs";
-import {fromAppFocusNode} from "../../../../store/app.selectors";
+import {fromAppFocusElement} from "../../../../store/app.selectors";
 
 @Component({
   selector: 'app-display',
@@ -36,8 +36,8 @@ export class DisplayComponent implements OnInit {
   dblClickFirstNode: Node | NonTerminalNode | EndNode | undefined;
   dblClickSecondNode: Node | NonTerminalNode | EndNode | undefined;
 
-  private focusNodeSub!: Subscription;
-  private focusNodeId: number = 0;
+  private focusElementSub!: Subscription;
+  private focusElementId: number = 0;
 
   nodes: Node[] = [
     {id: 0, x: 200, y: 225, value: 'S'},
@@ -63,19 +63,19 @@ export class DisplayComponent implements OnInit {
 
 
   edges: Edge[] = [
-    {source: this.nodes[0], target: this.nodes[1], left: false, right: true},
-    {source: this.nodes[0], target: this.nonTerminals[0], left: false, right: true},
+    {id: 10000, source: this.nodes[0], target: this.nodes[1], left: false, right: true},
+    {id: 10001,source: this.nodes[0], target: this.nonTerminals[0], left: false, right: true},
     // {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
     // {source: this.nodes[0], target: this.nodes[3], left: false, right: true},
-    {source: this.nonTerminals[0], target: this.nodes[5], left: false, right: true},
-    {source: this.nonTerminals[1], target: this.nodes[2], left: false, right: true},
-    {source: this.nodes[2], target: this.nodes[3], left: false, right: true},
-    {source: this.nodes[3], target: this.nodes[4], left: false, right: true},
-    {source: this.nodes[4], target: this.nonTerminals[2], left: false, right: true},
-    {source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
+    {id: 10002,source: this.nonTerminals[0], target: this.nodes[5], left: false, right: true},
+    {id: 10003,source: this.nonTerminals[1], target: this.nodes[2], left: false, right: true},
+    {id: 10004,source: this.nodes[2], target: this.nodes[3], left: false, right: true},
+    {id: 10005,source: this.nodes[3], target: this.nodes[4], left: false, right: true},
+    {id: 10006,source: this.nodes[4], target: this.nonTerminals[2], left: false, right: true},
+    {id: 10007,source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
   ];
   constrains: Constrain[] = [
-    {id: 0, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
+    {id: 1000, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
     // {id: 1, source: this.nodes[1], target: this.nodes[1], left: false, right: true, constrain: 'n'},
     // {id: 2, source: this.nodes[3], target: this.nodes[3], left: false, right: true, constrain: 1}
   ];
@@ -86,7 +86,7 @@ export class DisplayComponent implements OnInit {
   // ];
   // edges: Edge[] = [];
 
-  private nodeId: number = 1;
+  private idCounter: number = 1;
 
   constructor(private store: Store, private service: ParserService, private exampleGenerator: ExampleGeneratorService) {
   }
@@ -95,9 +95,10 @@ export class DisplayComponent implements OnInit {
     this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
     this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
     console.log(this.example)
-    this.focusNodeSub = this.store.select(fromAppFocusNode)
+    this.focusElementSub = this.store.select(fromAppFocusElement)
       .subscribe((nodeId: number) => {
-        this.focusNodeId = nodeId;
+        console.log(nodeId)
+        this.focusElementId = nodeId;
       });
     // this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
   }
@@ -109,8 +110,9 @@ export class DisplayComponent implements OnInit {
       this.dblClickSecondNode = node;
     }
     if (this.dblClickFirstNode && this.dblClickSecondNode && this.dblClickFirstNode !== this.dblClickSecondNode) {
-      this.edges.push({source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true});
-      this.store.dispatch(updateEdges({edges: this.edges.map(edge => ({...edge}))}))
+      this.edges.push({id: this.idCounter, source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true});
+      this.idCounter++;
+      this.store.dispatch(updateEdges({edges: this.edges.map(edge => ({...edge}))}));
       this.dblClickFirstNode = undefined;
       this.dblClickSecondNode = undefined;
       this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
@@ -118,18 +120,24 @@ export class DisplayComponent implements OnInit {
   }
 
   addNewNode(input: string) {
-    this.nodes.push({id: this.nodeId, x: 400, y: 400, value: input});
-    this.nodeId++;
+    this.nodes.push({id: this.idCounter, x: 400, y: 400, value: input});
+    this.idCounter++;
     // this.store.dispatch(updateNodes({ nodes: this.nodes.map(node=> ({...node}))}))
   }
 
   public clicked(event: any){
     if(this.display.nativeElement === event.target){
-      this.store.dispatch(nodeClicked({nodeId: 10000}))
+      this.store.dispatch(elementClicked({id: 1000000}))
     }
   }
   public delete(){
-    console.log("test")
+    this.nodes = this.nodes.filter(node => node.id !== this.focusElementId);
+    this.nonTerminals = this.nonTerminals.filter(nonTerminal => nonTerminal.id !== this.focusElementId);
+    this.endNodes = this.endNodes.filter(endNode => endNode.id !== this.focusElementId);
+    this.edges = this.edges.filter(edge => edge.id !== this.focusElementId);
+    this.constrains = this.constrains.filter(constrain => constrain.id !== this.focusElementId);
+    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
+    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
   }
 
 }

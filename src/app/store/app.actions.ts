@@ -11,4 +11,4 @@ export const updateConstrains = createAction("Update Constrains" , props<{ const
 
 export const updateParsingTree = createAction("Update ParsingTree", props<{ parsingTree: ParsingTree }>());
 
-export const nodeClicked = createAction("Node Clicked" , props<{ nodeId: number }>());
+export const elementClicked = createAction("Node Clicked" , props<{ id: number }>());

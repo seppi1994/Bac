@@ -2,6 +2,10 @@ import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from '@an
 import {drag, select, Selection} from "d3";
 import * as GLOBALVARIABLES from "../../../../../shared/global-variables";
 import {NonTerminalNode} from "../../../../../shared/model/non-terminal-node";
+import {elementClicked} from "../../../../../store/app.actions";
+import {Store} from "@ngrx/store";
+import {fromAppFocusElement} from "../../../../../store/app.selectors";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: '[app-non-terminal-node]',
@@ -14,12 +18,22 @@ export class NonTerminalNodeComponent implements OnInit, AfterViewInit {
   @Input()
   public nonTerminal!: NonTerminalNode;
 
+  private focusElementSub!: Subscription;
+
+  public focus: boolean = false;
+
   @Output()
   onDoubleClick = new EventEmitter<any>();
 
-  constructor() { }
+  constructor(private store: Store) { }
 
   ngOnInit(): void {
+    this.focusElementSub = this.store.select(fromAppFocusElement)
+      .subscribe((nodeId: number) => {
+        if(nodeId !== this.nonTerminal.id){
+          this.focus = false;
+        }
+      });
   }
 
 
@@ -27,6 +41,7 @@ export class NonTerminalNodeComponent implements OnInit, AfterViewInit {
     this.circle = select('#non-ter-node' + this.nonTerminal.id);
     this.circle = this.circle.data<NonTerminalNode>([this.nonTerminal]);
     this.circle.on('dblclick', () => this.onDoubleClick.emit());
+    this.circle.on('click', () => this.clicked());
 
 
     this.circle.call(drag()
@@ -55,5 +70,10 @@ export class NonTerminalNodeComponent implements OnInit, AfterViewInit {
 
   public changeName(input: string){
     this.nonTerminal.name = input;
+  }
+
+  private clicked(){
+    this.store.dispatch(elementClicked({id: this.nonTerminal.id}))
+    this.focus = true
   }
 }

@@ -3,6 +3,10 @@ import {Edge} from "../../../../shared/model/edge";
 import * as GLOBALVARIABLES from "../../../../shared/global-variables";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
 import {Constrain} from "../../../../shared/model/constrain";
+import {elementClicked} from "../../../../store/app.actions";
+import {Store} from "@ngrx/store";
+import {fromAppFocusElement} from "../../../../store/app.selectors";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: '[app-constrain]',
@@ -14,10 +18,18 @@ export class ConstrainComponent implements OnInit {
   @Input()
   constrains!: Constrain[];
 
-  constructor() {
+  private focusElementSub!: Subscription;
+
+  public focus: number | undefined = undefined;
+
+  constructor(private store: Store) {
   }
 
   ngOnInit(): void {
+    this.focusElementSub = this.store.select(fromAppFocusElement)
+      .subscribe((id: number) => {
+        this.focus = id;
+      });
   }
 
   public getPosition(edge: Edge): string {
@@ -53,11 +65,17 @@ export class ConstrainComponent implements OnInit {
   }
 
   public getMarker(edge: Edge): string {
-    if (edge.right) {
-      return ArrowDirectionEnum.startArrow;
-    }
-    if (edge.left) {
+    if (edge.left){
+      if(edge.id === this.focus){
+        return ArrowDirectionEnum.endArrow + '-focus'
+      }
       return ArrowDirectionEnum.endArrow;
+    }
+    if (edge.right){
+      if(edge.id === this.focus){
+        return ArrowDirectionEnum.startArrow + '-focus'
+      }
+      return ArrowDirectionEnum.startArrow;
     }
     return '';
   }
@@ -91,5 +109,10 @@ export class ConstrainComponent implements OnInit {
     const dry = 24;
 
     return "M" + x2 + "," + y2 + "A" + drx + "," + dry + " " + xRotation + "," + largeArc + "," + sweep + " " + x1 + "," + y1;
+  }
+
+  clicked(id: number){
+    this.store.dispatch(elementClicked({id: id}));
+    this.focus = id;
   }
 }

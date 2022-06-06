@@ -1,6 +1,6 @@
 import {createReducer, on} from "@ngrx/store";
 import {AppState} from "./app.state";
-import {nodeClicked, updateConstrains, updateEdges, updateNodes, updateParsingTree} from "./app.actions";
+import {elementClicked, updateConstrains, updateEdges, updateNodes, updateParsingTree} from "./app.actions";
 
 export const initialState: AppState = {
   nodes:  [],
@@ -9,7 +9,7 @@ export const initialState: AppState = {
     nodes: []
   },
   constrains: [],
-  focusNode: 0
+  focusElement: 0
 };
 
 export const appReducer = createReducer(
@@ -30,7 +30,7 @@ export const appReducer = createReducer(
     ...state,
     parsingTree: action.parsingTree
   })),
-  on(nodeClicked, (state, action) => ({
+  on(elementClicked, (state, action) => ({
     ...state,
-    focusNode: action.nodeId
+    focusElement: action.id
   })));

@@ -9,5 +9,5 @@ export interface AppState{
   parsingTree: ParsingTree;
   constrains: Constrain[];
 
-  focusNode: number;
+  focusElement: number;
 }

@@ -3,6 +3,10 @@ import {Edge} from "../../../../shared/model/edge";
 import {Node} from "../../../../shared/model/node";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
 import * as GLOBALVARIABLES from "../../../../shared/global-variables"
+import {elementClicked} from "../../../../store/app.actions";
+import {Store} from "@ngrx/store";
+import {fromAppFocusElement} from "../../../../store/app.selectors";
+import {Subscription} from "rxjs";
 
 
 @Component({
@@ -17,9 +21,18 @@ export class EdgesComponent implements OnInit {
 
   nodes: Node[] = [];
 
-  constructor() { }
+  private focusElementSub!: Subscription;
+
+
+  public focus: number | undefined = undefined;
+
+  constructor(private store: Store) { }
 
   ngOnInit(): void {
+    this.focusElementSub = this.store.select(fromAppFocusElement)
+      .subscribe((id: number) => {
+        this.focus = id;
+      });
   }
 
   public getPosition(edge: Edge): string{
@@ -40,12 +53,23 @@ export class EdgesComponent implements OnInit {
 
   public getMarker(edge: Edge): string{
     if (edge.right){
+      if(edge.id === this.focus){
+        return ArrowDirectionEnum.endArrow + '-focus'
+      }
       return ArrowDirectionEnum.endArrow;
     }
     if (edge.left){
+      if(edge.id === this.focus){
+        return ArrowDirectionEnum.startArrow + '-focus'
+      }
       return ArrowDirectionEnum.startArrow;
     }
     return '';
+  }
+
+  clicked(id: number){
+    this.store.dispatch(elementClicked({id: id}));
+    this.focus = id;
   }
 
 }

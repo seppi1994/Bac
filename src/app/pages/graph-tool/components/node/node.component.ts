@@ -13,8 +13,8 @@ import {
 import * as GLOBALVARIABLES from "../../../../shared/global-variables"
 import {Subscription} from "rxjs";
 import {Store} from "@ngrx/store";
-import {fromAppFocusNode} from "../../../../store/app.selectors";
-import {nodeClicked} from "../../../../store/app.actions";
+import {fromAppFocusElement} from "../../../../store/app.selectors";
+import {elementClicked} from "../../../../store/app.actions";
 
 @Component({
   selector: '[app-node]',
@@ -27,7 +27,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   public focus: boolean = false;
 
-  private focusNodeSub!: Subscription;
+  private focusElementSub!: Subscription;
 
   @Input()
   public node!: Node;
@@ -38,7 +38,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   constructor(private store: Store) { }
 
   ngOnInit(): void {
-    this.focusNodeSub = this.store.select(fromAppFocusNode)
+    this.focusElementSub = this.store.select(fromAppFocusElement)
       .subscribe((nodeId: number) => {
         if(nodeId !== this.node.id){
           this.focus = false;
@@ -93,7 +93,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
   }
 
   private clicked(){
-    this.store.dispatch(nodeClicked({nodeId: this.node.id}))
+    this.store.dispatch(elementClicked({id: this.node.id}))
     this.focus = true
   }
 }

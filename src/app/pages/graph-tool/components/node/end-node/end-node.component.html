@@ -1,5 +1,5 @@
 <svg:g id="end-g{{endNode.id}}" attr.transform="translate({{endNode.x}},{{endNode.y}})">
-  <svg:circle id="end-node{{endNode.id}}" class="node" attr.r="{{circleRadius}}" style="fill: white; stroke: black"></svg:circle>
+  <svg:circle id="end-node{{endNode.id}}" class="node" attr.r="{{circleRadius}}" [ngClass]="focus ? 'circle-focus' : 'circle'"></svg:circle>
 
 <!--  <svg:foreignObject id="end-ob{{node.id}}" x="-19" y="-10" width="48" height="24">-->
 <!--    <input #input class="input" type="text" placeholder="" (input)="changeNodeValue(input.value)"-->

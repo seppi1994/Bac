@@ -28,6 +28,16 @@
           <path d="M10,-5L0,0L10,5" fill="#000"></path>
         </marker>
       </defs>
+      <defs>
+        <marker id="{{eArrowDirection.endArrow}}-focus" viewBox="0 -5 10 10" refX="6" markerWidth="3" markerHeight="3" orient="auto">
+          <path d="M0,-5L10,0L0,5" fill="red"></path>
+        </marker>
+      </defs>
+      <defs>
+        <marker id="{{eArrowDirection.startArrow}}-focus" viewBox="0 -5 10 10" refX="4" markerWidth="3" markerHeight="3" orient="auto">
+          <path d="M10,-5L0,0L10,5" fill="red"></path>
+        </marker>
+      </defs>
       <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
       <g app-edges [edges]="edges"></g>
       <g app-constrain [constrains]="constrains"></g>

@@ -2,6 +2,10 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {drag, select, Selection} from "d3";
 import * as GLOBALVARIABLES from "../../../../../shared/global-variables";
 import {EndNode} from "../../../../../shared/model/end-node";
+import {elementClicked} from "../../../../../store/app.actions";
+import {Store} from "@ngrx/store";
+import {fromAppFocusElement} from "../../../../../store/app.selectors";
+import {Subscription} from "rxjs";
 
 @Component({
   selector: '[app-end-node]',
@@ -14,12 +18,22 @@ export class EndNodeComponent implements OnInit {
   @Input()
   public endNode!: EndNode;
 
+  public focus: boolean = false;
+
+  private focusElementSub!: Subscription;
+
   @Output()
   onDoubleClick = new EventEmitter<any>();
 
-  constructor() { }
+  constructor(private store: Store) { }
 
   ngOnInit(): void {
+    this.focusElementSub = this.store.select(fromAppFocusElement)
+      .subscribe((nodeId: number) => {
+        if(nodeId !== this.endNode.id){
+          this.focus = false;
+        }
+      });
   }
 
 
@@ -27,6 +41,7 @@ export class EndNodeComponent implements OnInit {
     this.circle = select('#end-node' + this.endNode.id);
     this.circle = this.circle.data<EndNode>([this.endNode]);
     this.circle.on('dblclick', () => this.onDoubleClick.emit());
+    this.circle.on('click', () => this.clicked());
 
 
     this.circle.call(drag()
@@ -52,5 +67,10 @@ export class EndNodeComponent implements OnInit {
   get circleRadius(){
     return GLOBALVARIABLES.circleRadius;
   }
+  private clicked(){
+    this.store.dispatch(elementClicked({id: this.endNode.id}))
+    this.focus = true
+  }
+
 
 }
