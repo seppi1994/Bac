@@ -1,27 +1,38 @@
-<svg id="1"
-     width='100%'
-     height="900px"
-     oncontextmenu="return false;"
-     style="background: #b6bab7">
-  <defs>
-    <marker id="{{eArrowDirection.endArrow}}" viewBox="0 -5 10 10" refX="6" markerWidth="3" markerHeight="3" orient="auto">
-      <path d="M0,-5L10,0L0,5" fill="#000"></path>
-    </marker>
-  </defs>
-  <defs>
-    <marker id="{{eArrowDirection.startArrow}}" viewBox="0 -5 10 10" refX="4" markerWidth="3" markerHeight="3" orient="auto">
-      <path d="M10,-5L0,0L10,5" fill="#000"></path>
-    </marker>
-  </defs>
-  <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
-  <g app-edges [edges]="edges"></g>
-  <g app-constrain [constrains]="constrains"></g>
-  <g app-non-terminal-node [nonTerminal]="nonTerminal" (onDoubleClick)="addNewEdge(nonTerminal)" *ngFor="let nonTerminal of nonTerminals"></g>
-  <g app-end-node [endNode]="endNode" (onDoubleClick)="addNewEdge(endNode)" *ngFor="let endNode of endNodes"></g>
-</svg>
-<form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">
-  <input type="text" name="input" ngModel>
-  <button type="submit">new Node</button>
-</form>
-<app-parser-display></app-parser-display>
-<div>{{example}}</div>
+<div class="flex-container">
+  <div class="side-bar">
+    <div class="buttons container-border">
+      <form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">
+        <input type="text" name="input" ngModel>
+        <button type="submit">new Node</button>
+      </form>
+    </div>
+    <div class="parse-input container-border">
+      <app-parser-display></app-parser-display>
+    </div>
+    <div class="example-output container-border">{{example}}</div>
+  </div>
+  <div style="width: 100%" contenteditable="false" (keydown.backspace)="delete()">
+    <svg #display id="1"
+         width='100%'
+         height="100%"
+         oncontextmenu="return false;"
+         style="background: #b6bab7"
+          (click)="clicked($event)">
+      <defs>
+        <marker id="{{eArrowDirection.endArrow}}" viewBox="0 -5 10 10" refX="6" markerWidth="3" markerHeight="3" orient="auto">
+          <path d="M0,-5L10,0L0,5" fill="#000"></path>
+        </marker>
+      </defs>
+      <defs>
+        <marker id="{{eArrowDirection.startArrow}}" viewBox="0 -5 10 10" refX="4" markerWidth="3" markerHeight="3" orient="auto">
+          <path d="M10,-5L0,0L10,5" fill="#000"></path>
+        </marker>
+      </defs>
+      <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
+      <g app-edges [edges]="edges"></g>
+      <g app-constrain [constrains]="constrains"></g>
+      <g app-non-terminal-node [nonTerminal]="nonTerminal" (onDoubleClick)="addNewEdge(nonTerminal)" *ngFor="let nonTerminal of nonTerminals"></g>
+      <g app-end-node [endNode]="endNode" (onDoubleClick)="addNewEdge(endNode)" *ngFor="let endNode of endNodes"></g>
+    </svg>
+  </div>
+</div>

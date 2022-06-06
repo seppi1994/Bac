@@ -11,6 +11,10 @@ import {
   select, drag, Selection
 } from 'd3';
 import * as GLOBALVARIABLES from "../../../../shared/global-variables"
+import {Subscription} from "rxjs";
+import {Store} from "@ngrx/store";
+import {fromAppFocusNode} from "../../../../store/app.selectors";
+import {nodeClicked} from "../../../../store/app.actions";
 
 @Component({
   selector: '[app-node]',
@@ -21,15 +25,25 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   circle!:Selection<any, any, any, any>;
 
+  public focus: boolean = false;
+
+  private focusNodeSub!: Subscription;
+
   @Input()
   public node!: Node;
 
   @Output()
   onDoubleClick = new EventEmitter<any>();
 
-  constructor() { }
+  constructor(private store: Store) { }
 
   ngOnInit(): void {
+    this.focusNodeSub = this.store.select(fromAppFocusNode)
+      .subscribe((nodeId: number) => {
+        if(nodeId !== this.node.id){
+          this.focus = false;
+        }
+    });
   }
 
 
@@ -37,6 +51,7 @@ export class NodeComponent implements OnInit, AfterViewInit {
     this.circle = select('#node' + this.node.id);
     this.circle = this.circle.data<Node>([this.node]);
     this.circle.on('dblclick', () => this.onDoubleClick.emit());
+    this.circle.on('click', () => this.clicked());
 
     // const g = select('#g' + this.node.id).append("foreignObject")
     //   .attr("width", 48)
@@ -75,5 +90,10 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   public changeNodeValue(input: string){
     this.node.value = input;
+  }
+
+  private clicked(){
+    this.store.dispatch(nodeClicked({nodeId: this.node.id}))
+    this.focus = true
   }
 }

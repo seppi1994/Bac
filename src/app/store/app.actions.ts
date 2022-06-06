@@ -10,3 +10,5 @@ export const updateEdges = createAction("Update Edges" , props<{ edges: Edge[] }
 export const updateConstrains = createAction("Update Constrains" , props<{ constrains: Constrain[] }>());
 
 export const updateParsingTree = createAction("Update ParsingTree", props<{ parsingTree: ParsingTree }>());
+
+export const nodeClicked = createAction("Node Clicked" , props<{ nodeId: number }>());

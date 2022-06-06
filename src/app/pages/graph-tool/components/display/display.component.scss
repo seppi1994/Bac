@@ -1,0 +1,28 @@
+.flex-container{
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+.side-bar{
+  flex-direction: column;
+  width: 20%;
+  height: 100%;
+  display: flex;
+}
+.buttons{
+  flex-grow: 3;
+  border: black;
+  //height: 100%;
+}
+.parse-input{
+  flex-grow: 3;
+  border: black;
+  //height: 100%;
+}
+.example-output{
+  flex-grow: 1;
+  //height: 100%;
+}
+.container-border{
+  border: 1px solid black;
+}

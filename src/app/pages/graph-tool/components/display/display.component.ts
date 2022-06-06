@@ -1,14 +1,17 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, ElementRef, HostListener, OnInit, ViewChild} from '@angular/core';
 import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {updateEdges} from "../../../../store/app.actions";
+import {nodeClicked, updateEdges} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 import {NonTerminalNode} from "../../../../shared/model/non-terminal-node";
 import {EndNode} from "../../../../shared/model/end-node";
 import {ExampleGeneratorService} from "../../../exaple-generator/service/example-generator.service";
+import {Element} from "@angular/compiler";
+import {Subscription} from "rxjs";
+import {fromAppFocusNode} from "../../../../store/app.selectors";
 
 @Component({
   selector: 'app-display',
@@ -19,10 +22,22 @@ export class DisplayComponent implements OnInit {
 
   example!: string;
 
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'Delete'){
+      this.delete()
+    }
+  }
+
+  @ViewChild('display') display!: ElementRef<HTMLInputElement>;
+
   eArrowDirection = ArrowDirectionEnum;
 
   dblClickFirstNode: Node | NonTerminalNode | EndNode | undefined;
   dblClickSecondNode: Node | NonTerminalNode | EndNode | undefined;
+
+  private focusNodeSub!: Subscription;
+  private focusNodeId: number = 0;
 
   nodes: Node[] = [
     {id: 0, x: 200, y: 225, value: 'S'},
@@ -80,6 +95,10 @@ export class DisplayComponent implements OnInit {
     this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
     this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
     console.log(this.example)
+    this.focusNodeSub = this.store.select(fromAppFocusNode)
+      .subscribe((nodeId: number) => {
+        this.focusNodeId = nodeId;
+      });
     // this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
   }
 
@@ -102,6 +121,15 @@ export class DisplayComponent implements OnInit {
     this.nodes.push({id: this.nodeId, x: 400, y: 400, value: input});
     this.nodeId++;
     // this.store.dispatch(updateNodes({ nodes: this.nodes.map(node=> ({...node}))}))
+  }
+
+  public clicked(event: any){
+    if(this.display.nativeElement === event.target){
+      this.store.dispatch(nodeClicked({nodeId: 10000}))
+    }
+  }
+  public delete(){
+    console.log("test")
   }
 
 }

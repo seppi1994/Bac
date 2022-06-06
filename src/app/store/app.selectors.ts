@@ -10,3 +10,5 @@ export const fromAppSelectedConstrains = createSelector(selectAppState, (state: 
 
 export const fromAppSelected = createSelector(selectAppState, (state: AppState) => state.parsingTree);
 
+export const fromAppFocusNode = createSelector(selectAppState, (state: AppState) => state.focusNode);
+

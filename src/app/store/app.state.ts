@@ -7,5 +7,7 @@ export interface AppState{
   nodes: Node[];
   edges: Edge[];
   parsingTree: ParsingTree;
-  constrains: Constrain[]
+  constrains: Constrain[];
+
+  focusNode: number;
 }
