@@ -61,10 +61,10 @@ export class ParserService {
     this.edges = edges;
     this.nonTerminals = nonTerminals;
     const workableEdges = edges.map(edge => ({...edge}));
-    console.log(workableEdges)
+    // console.log(workableEdges)
     for (let i = 0; i < nonTerminals.length; i += 3) {
       // workableEdges.push({source: nonTerminals[i], target: nonTerminals[i+1]});
-      console.log(nonTerminals[0])
+      // console.log(nonTerminals[0])
       workableEdges.map(edge => {
         if("name" in edge.target){
           if(edge.target.id === nonTerminals[i].id){
@@ -83,7 +83,7 @@ export class ParserService {
     const parsingTreeConstrain = workableConstrains.map(x => ({constrain: x, goalNode: undefined}))
     const parsingTree: ParsingTree = {nodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)};
     // this.store.dispatch(updateParsingTree({parsingTree: parsingTree}));
-    console.log(parsingTree)
+    // console.log(parsingTree)
     // this.parsingTree = parsingTree;
     return parsingTree;
   }

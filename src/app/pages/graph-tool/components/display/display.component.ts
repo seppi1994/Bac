@@ -9,9 +9,9 @@ import {Constrain} from "../../../../shared/model/constrain";
 import {NonTerminalNode} from "../../../../shared/model/non-terminal-node";
 import {EndNode} from "../../../../shared/model/end-node";
 import {ExampleGeneratorService} from "../../../exaple-generator/service/example-generator.service";
-import {Element} from "@angular/compiler";
 import {Subscription} from "rxjs";
 import {fromAppFocusElement} from "../../../../store/app.selectors";
+import {MatButtonToggleChange} from "@angular/material/button-toggle";
 
 @Component({
   selector: 'app-display',
@@ -21,6 +21,7 @@ import {fromAppFocusElement} from "../../../../store/app.selectors";
 export class DisplayComponent implements OnInit {
 
   example!: string;
+  secondExample!: string;
 
   @HostListener('document:keydown', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -29,6 +30,26 @@ export class DisplayComponent implements OnInit {
     }
   }
 
+  @HostListener('document:dblclick', ['$event'])
+  handleDbClickEvent(event: MouseEvent) {
+    if(this.display.nativeElement === event.target){
+      if (this.toggleNodeChange === 'Node'){
+        this.addNewNode(this.inputNode.nativeElement.value, event.x - 256, event.y);
+      }
+      if (this.toggleNodeChange === 'NonTerminal'){
+        this.addNewNonTerminal(this.inputNode.nativeElement.value, event.x - 256, event.y);
+      }
+      if(this.toggleNodeChange === 'EndNode'){
+        this.addNewEndNode(event.x - 256, event.y)
+      }
+    }
+  }
+
+  private toggleNodeChange: string = 'Node';
+  public isEditable: boolean = false;
+  private toggleEdgeChange: string = 'Edge';
+
+  @ViewChild('input') inputNode!: ElementRef<HTMLInputElement>;
   @ViewChild('display') display!: ElementRef<HTMLInputElement>;
 
   eArrowDirection = ArrowDirectionEnum;
@@ -37,7 +58,7 @@ export class DisplayComponent implements OnInit {
   dblClickSecondNode: Node | NonTerminalNode | EndNode | undefined;
 
   private focusElementSub!: Subscription;
-  private focusElementId: number = 0;
+  private focusElementId: number = -1;
 
   nodes: Node[] = [
     {id: 0, x: 200, y: 225, value: 'S'},
@@ -86,21 +107,28 @@ export class DisplayComponent implements OnInit {
   // ];
   // edges: Edge[] = [];
 
-  private idCounter: number = 1;
+  private idCounter: number = 1010101;
 
   constructor(private store: Store, private service: ParserService, private exampleGenerator: ExampleGeneratorService) {
   }
 
   ngOnInit(): void {
-    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
-    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
-    console.log(this.example)
+    this.updateParsingTreeAndExample();
     this.focusElementSub = this.store.select(fromAppFocusElement)
       .subscribe((nodeId: number) => {
-        console.log(nodeId)
         this.focusElementId = nodeId;
       });
-    // this.store.dispatch(updateConstrains({constrains: this.constrains.map(constrain => ({...constrain}))}));
+  }
+
+
+
+  addNewLink(node: Node | NonTerminalNode | EndNode): void {
+    if(this.toggleEdgeChange === 'Edge'){
+      this.addNewEdge(node);
+    }
+    if(this.toggleEdgeChange === 'Constrain'){
+      this.addNewConstrain(node);
+    }
   }
 
   addNewEdge(node: Node | NonTerminalNode | EndNode): void {
@@ -112,22 +140,52 @@ export class DisplayComponent implements OnInit {
     if (this.dblClickFirstNode && this.dblClickSecondNode && this.dblClickFirstNode !== this.dblClickSecondNode) {
       this.edges.push({id: this.idCounter, source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true});
       this.idCounter++;
-      this.store.dispatch(updateEdges({edges: this.edges.map(edge => ({...edge}))}));
       this.dblClickFirstNode = undefined;
       this.dblClickSecondNode = undefined;
-      this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
+      this.updateParsingTreeAndExample();
     }
   }
 
-  addNewNode(input: string) {
-    this.nodes.push({id: this.idCounter, x: 400, y: 400, value: input});
+
+  addNewConstrain(node: Node | NonTerminalNode | EndNode): void {
+    if (!this.dblClickFirstNode) {
+      this.dblClickFirstNode = node;
+    } else {
+      this.dblClickSecondNode = node;
+    }
+    if (this.dblClickFirstNode && this.dblClickSecondNode) {
+      this.constrains.push({id: this.idCounter, source: this.dblClickFirstNode, target: this.dblClickSecondNode, left: false, right: true, constrain: 'n'});
+      this.idCounter++;
+      this.dblClickFirstNode = undefined;
+      this.dblClickSecondNode = undefined;
+      this.updateParsingTreeAndExample();
+    }
+  }
+
+  addNewNode(input: string, x: number, y: number) {
+    this.nodes.push({id: this.idCounter, x: x, y: y, value: input});
     this.idCounter++;
-    // this.store.dispatch(updateNodes({ nodes: this.nodes.map(node=> ({...node}))}))
+    this.updateParsingTreeAndExample();
+  }
+
+  addNewNonTerminal(input: string, x: number, y: number) {
+    this.nonTerminals.push({id: this.idCounter, x: x, y: y, name: input});
+    this.idCounter++;
+    this.nonTerminals.push({id: this.idCounter, x: 200, y: y + 200, name: input});
+    this.idCounter++;
+    this.nonTerminals.push({id: this.idCounter, x: 1200, y: y + 200, name: input});
+    this.idCounter++;
+    this.updateParsingTreeAndExample();
+  }
+
+  addNewEndNode(x: number, y: number){
+    this.endNodes.push({id: this.idCounter, x: x, y: y});
+    this.idCounter++;
   }
 
   public clicked(event: any){
     if(this.display.nativeElement === event.target){
-      this.store.dispatch(elementClicked({id: 1000000}))
+      this.store.dispatch(elementClicked({id: -1}))
     }
   }
   public delete(){
@@ -136,8 +194,38 @@ export class DisplayComponent implements OnInit {
     this.endNodes = this.endNodes.filter(endNode => endNode.id !== this.focusElementId);
     this.edges = this.edges.filter(edge => edge.id !== this.focusElementId);
     this.constrains = this.constrains.filter(constrain => constrain.id !== this.focusElementId);
-    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
+    this.updateParsingTreeAndExample();
+  }
+
+  onToggleNodeChange(event: MatButtonToggleChange){
+    this.toggleNodeChange = event.value;
+    this.store.dispatch(elementClicked({id: -1}));
+  }
+
+  onToggleEdgeChange(event: MatButtonToggleChange){
+    this.toggleEdgeChange = event.value;
+    this.store.dispatch(elementClicked({id: -1}));
+  }
+
+  onToggleEditChange(event: MatButtonToggleChange){
+    this.isEditable = event.source.checked;
+    this.updateParsingTreeAndExample();
+    this.store.dispatch(elementClicked({id: -1}));
+  }
+
+  updateParsingTreeAndExample(){
     this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
+    this.makeSecondExample();
+    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
+  }
+
+  makeSecondExample(){
+    const result = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
+    if(result === this.example){
+      this.makeSecondExample();
+    }else {
+      this.secondExample = result;
+    }
   }
 
 }

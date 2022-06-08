@@ -8,7 +8,7 @@ import {ParserService} from "../../service/parser.service";
 })
 export class ParserDisplayComponent implements OnInit {
 
-  public parsingInput: string = '';
+  public parsingInputs: string[] = [];
   public valid: boolean = false;
 
   constructor(private parsingService: ParserService) { }
@@ -17,8 +17,12 @@ export class ParserDisplayComponent implements OnInit {
   }
 
   sendTheNewValue(input: string){
-    this.parsingInput = input;
-    this.valid = this.parsingService.parseString(input);
+    this.parsingInputs = input.split('\n');
+    // this.valid = this.parsingService.parseString(input);
+  }
+
+  parse(input: string): boolean{
+    return this.parsingService.parseString(input);
   }
 
 }

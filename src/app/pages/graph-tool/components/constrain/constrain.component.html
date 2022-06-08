@@ -2,15 +2,35 @@
   <ng-container *ngIf="constrain.source.id !== constrain.target.id; else elseBlock">
     <svg:path id="path{{constrain.id}}" class="link" attr.d='{{getPosition(constrain)}}' (click)="clicked(constrain.id)" [ngClass]="focus === constrain.id ? 'edge-focus' : ''"
               style="marker-start: url(#{{getMarker(constrain)}});"></svg:path>
-    <svg:text attr.x="{{getTextX(constrain)}}" dy="-15px" class="id" >
-      <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
-    </svg:text>
+
+    <ng-container *ngIf="editable; else text">
+      <svg:foreignObject id="con{{constrain.id}}" attr.x="{{getInputX(constrain) - 20}}" attr.y="{{getInputY(constrain) - 100}}" width="48" height="24">
+        <input #input class="input" type="text" placeholder="" (input)="changeConstrainValue(input.value, constrain.id)"
+               value="{{constrain.constrain}}">
+      </svg:foreignObject>
+    </ng-container>
+    <ng-template #text>
+      <svg:text attr.x="{{getTextX(constrain)}}" dy="-15px" class="id" >
+        <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
+      </svg:text>
+    </ng-template>
   </ng-container>
   <ng-template #elseBlock>
-    <svg:path id="path{{constrain.id}}" class="link" attr.d='{{getSelfEdge(constrain)}}' (click)="clicked(constrain.id)" [ngClass]="focus === constrain.id ? 'edge-focus' : ''"
+    <svg:path #dummyText id="path{{constrain.id}}" class="link" attr.d='{{getSelfEdge(constrain)}}' (click)="clicked(constrain.id)" [ngClass]="focus === constrain.id ? 'edge-focus' : ''"
               style="marker-start: url(#{{getMarker(constrain)}});"></svg:path>
-    <svg:text attr.x="{{getTextSelf()}}" dy="-15px" class="id" >
-      <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
-    </svg:text>
+    <ng-container *ngIf="editable; else text">
+      <svg:foreignObject id="con{{constrain.id}}" attr.x="{{getInputX(constrain) - 20}}" attr.y="{{getInputY(constrain) - 100}}" width="48" height="24">
+        <input #input class="input" type="text" placeholder="" (input)="changeConstrainValue(input.value, constrain.id)"
+               value="{{constrain.constrain}}">
+      </svg:foreignObject>
+<!--      <svg:text  attr.x="{{getTextSelf()}}" dy="-15px" class="id" contenteditable="true">-->
+<!--        <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>-->
+<!--      </svg:text>-->
+    </ng-container>
+    <ng-template #text>
+      <svg:text attr.x="{{getTextSelf()}}" dy="-15px" class="id" >
+        <svg:textPath attr.href="#path{{constrain.id}}">{{constrain.constrain}}</svg:textPath>
+      </svg:text>
+    </ng-template>
   </ng-template>
 </ng-container>

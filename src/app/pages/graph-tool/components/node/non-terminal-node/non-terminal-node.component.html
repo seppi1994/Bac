@@ -1,8 +1,14 @@
 <svg:g id="g{{nonTerminal.id}}" attr.transform="translate({{nonTerminal.x}},{{nonTerminal.y}})">
   <svg:circle id="non-ter-node{{nonTerminal.id}}" class="node" attr.r="{{circleRadius}}" [ngClass]="focus ? 'circle-focus' : 'circle'"></svg:circle>
 
-  <svg:foreignObject id="non-ter-ob{{nonTerminal.id}}" x="-19" y="-10" width="48" height="24">
-    <input #input class="input" type="text" placeholder="" (input)="changeName(input.value)"
-           value="{{nonTerminal.name}}">
-  </svg:foreignObject>
+  <ng-container *ngIf="editable; else text">
+    <svg:foreignObject id="non-ter-ob{{nonTerminal.id}}" x="-19" y="-10" width="48" height="24">
+      <input #input class="input" type="text" placeholder="" (input)="changeName(input.value)"
+             value="{{nonTerminal.name}}">
+    </svg:foreignObject>
+  </ng-container>
+  <ng-template #text>
+    <text id="text{{nonTerminal.id}}" x="-1" y="4" class="id" >{{nonTerminal.name}}</text>
+    <!--    <text x="-10" y="-30"> test</text>-->
+  </ng-template>
 </svg:g>

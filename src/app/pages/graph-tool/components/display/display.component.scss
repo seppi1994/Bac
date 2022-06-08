@@ -5,12 +5,12 @@
 }
 .side-bar{
   flex-direction: column;
-  width: 20%;
+  //flex-wrap: wrap;
   height: 100%;
-  display: flex;
+  display: inline-flex;
 }
 .buttons{
-  flex-grow: 3;
+  flex-grow: 1;
   border: black;
   //height: 100%;
 }
@@ -25,4 +25,7 @@
 }
 .container-border{
   border: 1px solid black;
+}
+button:active{
+  color: red;
 }

@@ -31,6 +31,8 @@ export class NodeComponent implements OnInit, AfterViewInit {
 
   @Input()
   public node!: Node;
+  @Input()
+  public editable!: boolean;
 
   @Output()
   onDoubleClick = new EventEmitter<any>();
@@ -63,18 +65,18 @@ export class NodeComponent implements OnInit, AfterViewInit {
     //   .html("<input type='text' class='input' value='2' />")
     //   .on("mousedown", (event) => { event.stopPropagation(); })
     //   .on("mousemove", (event) => { event.stopPropagation(); });
-
-    this.circle.call(drag()
-      .on('start', this.dragStart)
-      .on('drag', (event) => {
-        // Just a Quickfix. Target of mouseevent is switching between input and svg but should stay at svg
-        if(!event.sourceEvent.target.value){
-          this.node.x = event.sourceEvent.offsetX;
-          this.node.y = event.sourceEvent.offsetY;
-        }
-      })
-      .on('end', this.dragEnd));
-
+    if(!this.editable){
+      this.circle.call(drag()
+        .on('start', this.dragStart)
+        .on('drag', (event) => {
+          // Just a Quickfix. Target of mouseevent is switching between input and svg but should stay at svg
+          if(!event.sourceEvent.target.value){
+            this.node.x = event.sourceEvent.offsetX;
+            this.node.y = event.sourceEvent.offsetY;
+          }
+        })
+        .on('end', this.dragEnd));
+    }
 
   }
 

@@ -17,6 +17,8 @@ export class ConstrainComponent implements OnInit {
 
   @Input()
   constrains!: Constrain[];
+  @Input()
+  public editable!: boolean;
 
   private focusElementSub!: Subscription;
 
@@ -114,5 +116,46 @@ export class ConstrainComponent implements OnInit {
   clicked(id: number){
     this.store.dispatch(elementClicked({id: id}));
     this.focus = id;
+  }
+
+  changeConstrainValue(value: string, id: number){
+    this.constrains.forEach(constrain => {
+      if(constrain.id === id){
+        if(!Number.isNaN(Number(value))){
+          constrain.constrain = Number(value);
+        }else {
+          constrain.constrain = value;
+        }
+        console.log(typeof constrain.constrain)
+      }
+    })
+  }
+
+  test(any: any){
+    console.log(any)
+    // console.log(any.offsetLeft)
+    // console.log(any.offsetTop)
+    return -19
+  }
+
+  getInputX(edge: Edge){
+    if(edge.source.x > edge.target.x){
+      return edge.source.x - ((edge.source.x - edge.target.x)/2)
+    }else if(edge.source.x === edge.target.x){
+      return edge.source.x
+    }else {
+      return edge.target.x - ((edge.target.x - edge.source.x)/2)
+    }
+  }
+
+  getInputY(edge: Edge){
+    if(edge.source.y > edge.target.y){
+
+      return edge.target.y - ((edge.target.y - edge.source.y)/2)
+    }else if(edge.source.y === edge.target.y){
+      return edge.source.y
+    }else {
+      return edge.source.y -  ((edge.source.y - edge.target.y)/2)
+    }
   }
 }

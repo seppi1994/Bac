@@ -1,15 +1,41 @@
 <div class="flex-container">
   <div class="side-bar">
     <div class="buttons container-border">
-      <form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">
-        <input type="text" name="input" ngModel>
-        <button type="submit">new Node</button>
-      </form>
+      <div style="margin-top: 1rem; margin-bottom: 0.5rem; margin-left: 0.5rem; margin-right: 0.5rem">
+        <mat-button-toggle-group aria-label="Favorite Color" value="Node" (change)="onToggleNodeChange($event)" vertical>
+          <mat-button-toggle value="Node">Node</mat-button-toggle>
+          <mat-button-toggle value="NonTerminal">NonTerminal</mat-button-toggle>
+          <mat-button-toggle value="EndNode">EndNode</mat-button-toggle>
+        </mat-button-toggle-group>
+        <input #input type="text" name="input">
+      </div>
+
+      <mat-divider></mat-divider>
+<!--      <button mat-raised-button>new Node</button>-->
+<!--      <form #input='ngForm' (ngSubmit)="addNewNode(input.value.input)">-->
+<!--        <button mat-raised-button type="submit">new NonTerminal</button>-->
+<!--        <input type="text" name="input" ngModel>-->
+<!--      </form>-->
+      <div style="margin-top: 0.5rem; margin-bottom: 0.5rem; margin-left: 0.5rem">
+        <mat-button-toggle-group aria-label="Favorite Color" value="Edge" (change)="onToggleEdgeChange($event)" vertical>
+          <mat-button-toggle value="Edge">Edge</mat-button-toggle>
+          <mat-button-toggle value="Constrain">Constrain</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <mat-divider></mat-divider>
+      <div style="margin-top: 0.5rem; margin-bottom: 0.5rem; margin-left: 0.5rem">
+        <mat-button-toggle (change)="onToggleEditChange($event)">Edit</mat-button-toggle>
+      </div>
     </div>
     <div class="parse-input container-border">
       <app-parser-display></app-parser-display>
     </div>
-    <div class="example-output container-border">{{example}}</div>
+    <div class="example-output container-border">
+      <div>Example:</div>
+      {{example}}
+      <div>{{secondExample}}</div>
+    </div>
   </div>
   <div style="width: 100%" contenteditable="false" (keydown.backspace)="delete()">
     <svg #display id="1"
@@ -38,11 +64,11 @@
           <path d="M10,-5L0,0L10,5" fill="red"></path>
         </marker>
       </defs>
-      <g app-node [node]="node" (onDoubleClick)="addNewEdge(node)" *ngFor="let node of nodes"></g>
+      <g app-node [node]="node" [editable]="isEditable" (onDoubleClick)="addNewLink(node)" *ngFor="let node of nodes"></g>
       <g app-edges [edges]="edges"></g>
-      <g app-constrain [constrains]="constrains"></g>
-      <g app-non-terminal-node [nonTerminal]="nonTerminal" (onDoubleClick)="addNewEdge(nonTerminal)" *ngFor="let nonTerminal of nonTerminals"></g>
-      <g app-end-node [endNode]="endNode" (onDoubleClick)="addNewEdge(endNode)" *ngFor="let endNode of endNodes"></g>
+      <g app-constrain [constrains]="constrains" [editable]="isEditable"></g>
+      <g app-non-terminal-node [nonTerminal]="nonTerminal" [editable]="isEditable" (onDoubleClick)="addNewLink(nonTerminal)" *ngFor="let nonTerminal of nonTerminals"></g>
+      <g app-end-node [endNode]="endNode" (onDoubleClick)="addNewLink(endNode)" *ngFor="let endNode of endNodes"></g>
     </svg>
   </div>
 </div>

@@ -17,6 +17,13 @@ import {FormsModule} from "@angular/forms";
 import { ConstrainComponent } from './pages/graph-tool/components/constrain/constrain.component';
 import { NonTerminalNodeComponent } from './pages/graph-tool/components/node/non-terminal-node/non-terminal-node.component';
 import { EndNodeComponent } from './pages/graph-tool/components/node/end-node/end-node.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {HttpClientModule} from "@angular/common/http";
+import {MatButtonModule} from "@angular/material/button";
+import {MatDividerModule} from "@angular/material/divider";
+import {TextFieldModule} from "@angular/cdk/text-field";
+import {MatInputModule} from "@angular/material/input";
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,6 +45,13 @@ import { EndNodeComponent } from './pages/graph-tool/components/node/end-node/en
       logOnly: environment.production,
     }),
     FormsModule,
+    BrowserAnimationsModule,
+    MatButtonToggleModule,
+    HttpClientModule,
+    MatButtonModule,
+    MatDividerModule,
+    TextFieldModule,
+    MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

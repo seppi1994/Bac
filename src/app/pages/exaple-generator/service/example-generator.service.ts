@@ -18,12 +18,14 @@ export class ExampleGeneratorService {
     let workableConstrains = constrains.map(constrain => ({...constrain}));
     this.changeVariableConstrainsToRandomNumber(workableConstrains);
     const parsingTree: ParsingTree = this.parserService.createParsingTree(edges, workableConstrains, nonTerminals);
+    console.log(parsingTree)
     return this.createExample(parsingTree);
   }
 
   private createExample(parsingTree: ParsingTree): string{
     return this.createExampleRec(parsingTree.nodes[this.getRandomNumber(parsingTree.nodes.length)]);
   }
+
   private createExampleRec(parsingTreeNode: ParsingTreeNode): string {
     if (parsingTreeNode.parsingTreeNodes.length === 0){
       return parsingTreeNode.value;
@@ -35,13 +37,14 @@ export class ExampleGeneratorService {
       }
       return '';
     })
-    console.log(parsingTreeNode)
+    // console.log(parsingTreeNode)
     return parsingTreeNode.value + this.createExampleRec(parsingTreeNode.parsingTreeNodes[this.getRandomNumber(parsingTreeNode.parsingTreeNodes.length)]);
   }
 
   private changeVariableConstrainsToRandomNumber(constrains: Constrain[]){
     constrains.map(constrain => {
       if(typeof constrain.constrain === "string"){
+        console.log(constrain.constrain)
         constrain.constrain = this.getRandomNumber(10)
       }
     })

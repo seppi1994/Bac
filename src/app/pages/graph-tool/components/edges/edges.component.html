@@ -1,5 +1,5 @@
 <ng-container *ngFor="let edge of edges">
-  <svg:path class="link" attr.d='{{getPosition(edge)}}' (click)="clicked(edge.id)" [ngClass]="focus === edge.id ? 'edge-focus' : ''"
+  <svg:path id="edge{{edge.id}}" class="link" attr.d='{{getPosition(edge)}}' (click)="clicked(edge.id)" [ngClass]="focus === edge.id ? 'edge-focus' : ''"
             style="marker-end: url(#{{getMarker(edge)}});"></svg:path>
 </ng-container>
 

@@ -1,3 +1,11 @@
-<input #input (input)="sendTheNewValue(input.value)">
-<div *ngIf="valid" style="color: green">{{parsingInput}}</div>
-<div *ngIf="!valid" style="color: red">{{parsingInput}}</div>
+<div>Insert parsing input:</div>
+<textarea matInput class="text" #input (input)="sendTheNewValue(input.value)"></textarea>
+<div>Parsing output:</div>
+<ng-container *ngFor="let parsingInput of parsingInputs">
+  <div *ngIf="parse(parsingInput); else elseBlock" style="color: green">{{parsingInput}}</div>
+  <ng-template #elseBlock>
+    <div style="color: red">{{parsingInput}}</div>
+  </ng-template>
+
+</ng-container>
+
