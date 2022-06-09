@@ -23,8 +23,6 @@ export class ParserService {
   }
 
   public parseString(parseString: string): boolean {
-    // this.store.select(fromAppSelectedConstrains).subscribe(x => this.constrains = x);
-    // this.store.select(fromAppSelectedEdges).subscribe(x => this.edges = x);
     this._constrainVariableCount = [];
     this.constrains.forEach(constrain => {
       if (typeof constrain.constrain === "string") {
@@ -38,11 +36,15 @@ export class ParserService {
     this.parsingTree = this.createParsingTree(this.edges, this.constrains, this.nonTerminals);
     const boolArray = this.parsingTree?.nodes.map(x => this.parsingRecursion(x, parseString));
     let result = boolArray.find(x => x);
+    let isConstrainCheckFailed = false;
     this._constrains.forEach(constrain => {
       if (typeof constrain.parsingTreeNode.constrain === "number" && constrain.parsingTreeNode.constrain !== 0 && constrain.parsingTreeNode.constrain !== constrain.origConstrain) {
-        result = false;
+        isConstrainCheckFailed = true;
       }
     });
+    if (isConstrainCheckFailed){
+      return false;
+    }
     for (let i = 0; i < this._constrainVariableCount.length - 1; i++) {
       for (let j = i; j < this._constrainVariableCount.length; j++) {
         if (this._constrainVariableCount[i].constrainVariable === this._constrainVariableCount[j].constrainVariable) {
@@ -61,10 +63,7 @@ export class ParserService {
     this.edges = edges;
     this.nonTerminals = nonTerminals;
     const workableEdges = edges.map(edge => ({...edge}));
-    // console.log(workableEdges)
     for (let i = 0; i < nonTerminals.length; i += 3) {
-      // workableEdges.push({source: nonTerminals[i], target: nonTerminals[i+1]});
-      // console.log(nonTerminals[0])
       workableEdges.map(edge => {
         if("name" in edge.target){
           if(edge.target.id === nonTerminals[i].id){
@@ -78,18 +77,13 @@ export class ParserService {
         }
       })
     }
-    // console.log(workableEdges)
     const workableConstrains = constrains.map(constrain => ({...constrain}));
     const parsingTreeConstrain = workableConstrains.map(x => ({constrain: x, goalNode: undefined}))
     const parsingTree: ParsingTree = {nodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)};
-    // this.store.dispatch(updateParsingTree({parsingTree: parsingTree}));
-    // console.log(parsingTree)
-    // this.parsingTree = parsingTree;
     return parsingTree;
   }
 
   private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[] {
-    // debugger
     const parsingTreeNodes: { parsingNode: ParsingTreeNode, nodeId: number }[] = [];
 
     edges = edges.filter(edge => {
@@ -104,16 +98,10 @@ export class ParserService {
         return true;
       }
     });
-    const goalConstrainNode: ParsingTreeNode = {
-      value: '',
-      constrain: undefined,
-      parsingTreeNodes: []
-    }
     constrainNodes.forEach(constrainNode => {
       parsingTreeNodes.forEach(parsingTreeNode => {
         if (constrainNode.constrain.target.id === parsingTreeNode.nodeId) {
-          goalConstrainNode.parsingTreeNodes.push(parsingTreeNode.parsingNode);
-          constrainNode.goalNode = goalConstrainNode;
+          constrainNode.goalNode = parsingTreeNode.parsingNode;
         }
       })
     });
@@ -123,7 +111,7 @@ export class ParserService {
         if (constrainNode.goalNode) {
           let parsingNode!: ParsingTreeNode;
           if (typeof constrainNode.constrain.constrain === "string") {
-              parsingNode = {value: '', constrain: {variable: constrainNode.constrain.constrain, id: constrainNode.constrain.id}, parsingTreeNodes: [constrainNode.goalNode]};
+            parsingNode = {value: '', constrain: {variable: constrainNode.constrain.constrain, id: constrainNode.constrain.id}, parsingTreeNodes: [constrainNode.goalNode]};
           } else {
             parsingNode = {value: '', constrain: constrainNode.constrain.constrain, parsingTreeNodes: [constrainNode.goalNode]};
           }
@@ -136,14 +124,17 @@ export class ParserService {
   }
 
   private parsingRecursion(parsingTreeNode: ParsingTreeNode, parsString: string): boolean {
+
     const slicedParsingString = parsString.slice(0, parsingTreeNode.value.length);
     if (slicedParsingString === parsingTreeNode.value) {
-      parsingTreeNode.parsingTreeNodes = parsingTreeNode.parsingTreeNodes.filter(x => x.constrain !== 0)
       const boolArray = parsingTreeNode.parsingTreeNodes.map((x: ParsingTreeNode) => {
 
         if (typeof x.constrain === "number" && x.constrain !== 0) {
-          x.constrain--;
-          return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
+          x.constrain++;
+          if(x.parsingTreeNodes[0].value === parsString.slice(slicedParsingString.length, parsString.length).slice(0, x.parsingTreeNodes[0].value.length)){
+            x.constrain -= 2;
+            return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
+          }
         }
         if (typeof x.constrain !== "number" && x.constrain) {
           this._constrainVariableCount.forEach(constrainVariable => {
@@ -152,10 +143,6 @@ export class ParserService {
               constrainVariable.count++;
             }
           });
-          // if (parsString.slice(slicedParsingString.length, parsString.length).length === 0) {
-          //   console.log(1)
-          //   // return true;
-          // }
           return this.parsingRecursion(x, parsString.slice(slicedParsingString.length, parsString.length));
         }
 
@@ -169,18 +156,6 @@ export class ParserService {
       if (result || ((parsString.length === parsingTreeNode.value.length) && (boolArray.length === 0))) {
         return true;
       }
-      // parsingTreeNode.parsingTreeNodes.forEach(node => {
-      //   if("value" in node && node.value === "endNode"){
-      //     return true;
-      //   }
-      // })
-      // debugger
-      // const result = parsingTreeNode.parsingTreeNodes.find(node => {
-      //   return node.value === "endNode";
-      // });
-      // if(result){
-      //   return true;
-      // }
     }
     return false;
   }

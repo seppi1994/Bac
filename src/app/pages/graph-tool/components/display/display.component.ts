@@ -3,7 +3,7 @@ import {Node} from "../../../../shared/model/node";
 import {Store} from "@ngrx/store";
 import {Edge} from "../../../../shared/model/edge";
 import {ArrowDirectionEnum} from "../../../../shared/model/arrow-direction.enum";
-import {elementClicked, updateEdges} from "../../../../store/app.actions";
+import {elementClicked} from "../../../../store/app.actions";
 import {ParserService} from "../../../parser/service/parser.service";
 import {Constrain} from "../../../../shared/model/constrain";
 import {NonTerminalNode} from "../../../../shared/model/non-terminal-node";
@@ -42,6 +42,7 @@ export class DisplayComponent implements OnInit {
       if(this.toggleNodeChange === 'EndNode'){
         this.addNewEndNode(event.x - 256, event.y)
       }
+      this.inputNode.nativeElement.value = '';
     }
   }
 
