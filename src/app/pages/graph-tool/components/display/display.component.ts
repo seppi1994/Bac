@@ -69,16 +69,17 @@ export class DisplayComponent implements OnInit {
     {id: 4, x: 450, y: 450, value: '3'},
     {id: 5, x: 700, y: 450, value: '4'},
     {id: 6, x: 950, y: 450, value: '5'},
-    {id: 7, x: 700, y: 150, value: '2'},
+    {id: 7, x: 700, y: 300, value: '2'},
   ];
   nonTerminals: NonTerminalNode[] = [
-    {id: 114, x: 700, y: 300, name: 'TestMf', placeholder: true},
-    {id: 115, x: 200, y: 450, name: 'TestMf', begin: true},
-    {id: 116, x: 1200, y: 450, name: 'TestMf', end: true},
+    {id: 114, x: 450, y: 300, name: 'var', placeholder: true},
+    {id: 115, x: 200, y: 450, name: 'var', begin: true},
+    {id: 116, x: 1200, y: 450, name: 'var', end: true},
   ]
 
   endNodes: EndNode[] = [
-    {id: 227, x: 950, y: 150},
+    {id: 227, x: 950, y: 300},
+    {id: 228, x: 700, y: 150},
   ]
 
 
@@ -95,6 +96,7 @@ export class DisplayComponent implements OnInit {
     {id: 10005,source: this.nodes[3], target: this.nodes[4], left: false, right: true},
     {id: 10006,source: this.nodes[4], target: this.nonTerminals[2], left: false, right: true},
     {id: 10007,source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
+    {id: 10008,source: this.nodes[1], target: this.endNodes[1], left: false, right: true},
   ];
   constrains: Constrain[] = [
     {id: 1000, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
