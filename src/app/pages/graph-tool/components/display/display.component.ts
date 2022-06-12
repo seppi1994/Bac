@@ -74,12 +74,19 @@ export class DisplayComponent implements OnInit {
   nonTerminals: NonTerminalNode[] = [
     {id: 114, x: 450, y: 300, name: 'var', placeholder: true},
     {id: 115, x: 200, y: 450, name: 'var', begin: true},
-    {id: 116, x: 1200, y: 450, name: 'var', end: true},
+    // {id: 116, x: 1200, y: 450, name: 'var', end: true},
+    {id: 120, x: 450, y: 300, name: 'var', placeholder: true},
   ]
+
+  nonTerminalDefinition: NonTerminalNode[] = [
+    {id: 118, x: 200, y: 450, name: 'var', begin: true},
+    // {id: 119, x: 1200, y: 450, name: 'var', end: true},
+  ];
 
   endNodes: EndNode[] = [
     {id: 227, x: 950, y: 300},
     {id: 228, x: 700, y: 150},
+    {id: 229, x: 1200, y: 450},
   ]
 
 
@@ -91,10 +98,10 @@ export class DisplayComponent implements OnInit {
     // {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
     // {source: this.nodes[0], target: this.nodes[3], left: false, right: true},
     {id: 10002,source: this.nonTerminals[0], target: this.nodes[5], left: false, right: true},
-    {id: 10003,source: this.nonTerminals[1], target: this.nodes[2], left: false, right: true},
+    {id: 10003,source: this.nonTerminalDefinition[0], target: this.nodes[2], left: false, right: true},
     {id: 10004,source: this.nodes[2], target: this.nodes[3], left: false, right: true},
     {id: 10005,source: this.nodes[3], target: this.nodes[4], left: false, right: true},
-    {id: 10006,source: this.nodes[4], target: this.nonTerminals[2], left: false, right: true},
+    {id: 10006,source: this.nodes[4], target: this.endNodes[2], left: false, right: true},
     {id: 10007,source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
     {id: 10008,source: this.nodes[1], target: this.endNodes[1], left: false, right: true},
   ];
@@ -217,13 +224,13 @@ export class DisplayComponent implements OnInit {
   }
 
   updateParsingTreeAndExample(){
-    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
-    this.makeSecondExample();
-    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals);
+    // this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
+    // this.makeSecondExample();
+    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals ,this.nonTerminalDefinition);
   }
 
   makeSecondExample(){
-    const result = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals);
+    const result = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
     if(result === this.example){
       this.makeSecondExample();
     }else {

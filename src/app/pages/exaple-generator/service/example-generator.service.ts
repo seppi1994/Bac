@@ -14,13 +14,13 @@ export class ExampleGeneratorService {
   constructor(private parserService: ParserService) {
   }
 
-  process(edges: Edge[], constrains: Constrain[], nonTerminals: NonTerminalNode[]): string {
+  process(edges: Edge[], constrains: Constrain[], nonTerminals: NonTerminalNode[], nonTerminalDefinition: NonTerminalNode[]): string {
     let workableConstrains = constrains.map(constrain => ({...constrain}));
     this.changeVariableConstrainsToRandomNumber(workableConstrains);
-    const parsingTree: ParsingTree = this.parserService.createParsingTree(edges, workableConstrains, nonTerminals);
+    const parsingTree: ParsingTree = this.parserService.createParsingTree(edges, workableConstrains, nonTerminals, nonTerminalDefinition);
     let example: string = this.createExample(parsingTree);
     while (!this.parserService.parseString(example)){
-      const parsingTree2: ParsingTree = this.parserService.createParsingTree(edges, workableConstrains, nonTerminals);
+      const parsingTree2: ParsingTree = this.parserService.createParsingTree(edges, workableConstrains, nonTerminals, nonTerminalDefinition);
       example = this.createExample(parsingTree2)
     }
     return example;
