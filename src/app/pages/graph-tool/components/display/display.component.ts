@@ -224,8 +224,8 @@ export class DisplayComponent implements OnInit {
   }
 
   updateParsingTreeAndExample(){
-    // this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
-    // this.makeSecondExample();
+    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
+    this.makeSecondExample();
     this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals ,this.nonTerminalDefinition);
   }
 

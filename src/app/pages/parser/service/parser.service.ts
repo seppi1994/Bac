@@ -37,7 +37,8 @@ export class ParserService {
         });
       }
     });
-    this.parsingTree = this.createParsingTree(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
+    const [pTree, ] = this.createParsingTree(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
+    this.parsingTree = pTree;
     const boolArray = this.parsingTree?.nodes.map(x => this.parsingRecursion(x, parseString));
     let result = boolArray.find(x => x);
     let isConstrainCheckFailed = false;
@@ -61,7 +62,7 @@ export class ParserService {
     return result ? result : false;
   }
 
-  public createParsingTree(edges: Edge[], constrains: Constrain[], nonTerminals: NonTerminalNode[], nonTerminalDefinition: NonTerminalNode[]): ParsingTree {
+  public createParsingTree(edges: Edge[], constrains: Constrain[], nonTerminals: NonTerminalNode[], nonTerminalDefinition: NonTerminalNode[]): [ParsingTree, NonTerminalParsingTree[]] {
     this._constrains = [];
     this.constrains = constrains;
     this.edges = edges;
@@ -70,7 +71,8 @@ export class ParserService {
     const workableEdges = edges.map(edge => ({...edge}));
     const workableConstrains = constrains.map(constrain => ({...constrain}));
     const parsingTreeConstrain: ConstrainNode[] = workableConstrains.map(x => ({constrain: x, goalNode: undefined}));
-    this._nonTerminalTrees = this.createNonTerminal(nonTerminalDefinition, workableEdges, parsingTreeConstrain);
+    const nonTerminalTrees = this.createNonTerminal(nonTerminalDefinition, workableEdges, parsingTreeConstrain);
+    this._nonTerminalTrees = nonTerminalTrees;
     this.removeNonTerminalConstrains();
     const firstNode: ParsingTreeNode = {
       value: '',
@@ -78,7 +80,7 @@ export class ParserService {
       parsingTreeNodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)
     }
     const parsingTree: ParsingTree = {nodes: [firstNode]}
-    return parsingTree;
+    return [parsingTree, nonTerminalTrees];
   }
 
   private findNodesRec(id: number, edges: Edge[], constrainNodes: ConstrainNode[]): ParsingTreeNode[] {
@@ -194,7 +196,7 @@ export class ParserService {
     return false;
   }
 
-  createNonTerminal(nonTerminalDefinition: NonTerminalNode[], edges: Edge[], constrains: ConstrainNode[]): NonTerminalParsingTree[] {
+  public createNonTerminal(nonTerminalDefinition: NonTerminalNode[], edges: Edge[], constrains: ConstrainNode[]): NonTerminalParsingTree[] {
     const nonTerminalTrees: NonTerminalParsingTree[] = [];
     const nonTerminalConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = [];
     for (let i = 0; i < nonTerminalDefinition.length; i += 2) {
@@ -208,14 +210,13 @@ export class ParserService {
     return nonTerminalTrees;
   }
 
-  parseNonTerminal(parseString: string, variable: string): NonTerminalAnswer[] {
+  private parseNonTerminal(parseString: string, variable: string): NonTerminalAnswer[] {
     const parseTrees = this._nonTerminalTrees.filter(nonTerminalTree => nonTerminalTree.name === variable);
     parseTrees[0].usageCount++;
     const workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = parseTrees[0].constrains.map((constrain) => ({
       parsingTreeNode: {...constrain.parsingTreeNode},
       origConstrain: {...constrain.origConstrain}
     }));
-
 
     workableConstrains.forEach(workableConstrain => {
       if (typeof workableConstrain.parsingTreeNode.constrain !== "number" && workableConstrain.parsingTreeNode.constrain) {
@@ -235,7 +236,7 @@ export class ParserService {
     return result ? result : [{parseString: '', isValid: false}];
   }
 
-  parseNonTerminalRec(parsingTreeNode: ParsingTreeNode, parsString: string, usageCounter: number, workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[]): NonTerminalAnswer[] {
+  private parseNonTerminalRec(parsingTreeNode: ParsingTreeNode, parsString: string, usageCounter: number, workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[]): NonTerminalAnswer[] {
     const slicedParsingString = parsString.slice(0, parsingTreeNode.value.length);
     if (slicedParsingString === parsingTreeNode.value) {
       const boolArrayTemp: NonTerminalAnswer[][] = parsingTreeNode.parsingTreeNodes.map((x: ParsingTreeNode) => {
@@ -365,8 +366,6 @@ export class ParserService {
       for (let i = 0; i < this._nonTerminalTrees.length; i++) {
         for (let j = 0; j < this._nonTerminalTrees[i].constrains.length; j++) {
           const constrain = this._nonTerminalTrees[i].constrains[j].parsingTreeNode.constrain;
-          console.log('const')
-          console.log(constrain)
           if(typeof constrain !== 'number' && constrain){
             if(constrainVariable.constrainId === constrain.id){
               return false;
