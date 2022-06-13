@@ -42,9 +42,6 @@ export class ParserService {
     let result = boolArray.find(x => x);
     let isConstrainCheckFailed = false;
     this._constrains.forEach(constrain => {
-      // if (typeof constrain.parsingTreeNode.constrain === "number" && constrain.parsingTreeNode.constrain !== 0 && constrain.parsingTreeNode.constrain !== constrain.origConstrain) {
-      //   isConstrainCheckFailed = true;
-      // }
       if (constrain.parsingTreeNode.constrainTouched && constrain.parsingTreeNode.constrain !== 0) {
         isConstrainCheckFailed = true;
       }
@@ -71,30 +68,16 @@ export class ParserService {
     this.nonTerminals = nonTerminals;
     this.nonTerminalDefinition = nonTerminalDefinition;
     const workableEdges = edges.map(edge => ({...edge}));
-    // for (let i = 0; i < nonTerminals.length; i += 3) {
-    //   workableEdges.map(edge => {
-    //     if("name" in edge.target){
-    //       if(edge.target.id === nonTerminals[i].id){
-    //         edge.target = nonTerminals[i + 1];
-    //       }
-    //     }
-    //     if("name" in edge.source){
-    //       if(edge.source.id === nonTerminals[i].id){
-    //         edge.source = nonTerminals[i + 2];
-    //       }
-    //     }
-    //   })
-    // }
     const workableConstrains = constrains.map(constrain => ({...constrain}));
-    const parsingTreeConstrain: ConstrainNode[] = workableConstrains.map(x => ({constrain: x, goalNode: undefined}))
-    this._nonTerminalTrees = this.createNonTerminal(nonTerminalDefinition, workableEdges, parsingTreeConstrain)
+    const parsingTreeConstrain: ConstrainNode[] = workableConstrains.map(x => ({constrain: x, goalNode: undefined}));
+    this._nonTerminalTrees = this.createNonTerminal(nonTerminalDefinition, workableEdges, parsingTreeConstrain);
+    this.removeNonTerminalConstrains();
     const firstNode: ParsingTreeNode = {
       value: '',
       constrain: undefined,
       parsingTreeNodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)
     }
     const parsingTree: ParsingTree = {nodes: [firstNode]}
-    // const parsingTree: ParsingTree = {nodes: this.findNodesRec(0, workableEdges, parsingTreeConstrain)};
     return parsingTree;
   }
 
@@ -174,7 +157,6 @@ export class ParserService {
             return this.parsingRecursion(x, nonTerminalParseResult.parseString)
           })
           if (res) {
-            // return this.parsingRecursion(x, resultString);
             return true
           } else {
             return false;
@@ -182,7 +164,6 @@ export class ParserService {
         }
 
         if (typeof x.constrain === "number" && x.constrain !== 0) {
-          // x.constrain++;
           x.constrainTouched = true;
           if (x.parsingTreeNodes[0].value === parsString.slice(slicedParsingString.length, parsString.length).slice(0, x.parsingTreeNodes[0].value.length)) {
             x.constrain--;
@@ -230,8 +211,23 @@ export class ParserService {
   parseNonTerminal(parseString: string, variable: string): NonTerminalAnswer[] {
     const parseTrees = this._nonTerminalTrees.filter(nonTerminalTree => nonTerminalTree.name === variable);
     parseTrees[0].usageCount++;
-    const workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = parseTrees[0].constrains.
-      map((constrain) => ({parsingTreeNode: {...constrain.parsingTreeNode}, origConstrain: {...constrain.origConstrain}}));
+    const workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[] = parseTrees[0].constrains.map((constrain) => ({
+      parsingTreeNode: {...constrain.parsingTreeNode},
+      origConstrain: {...constrain.origConstrain}
+    }));
+
+
+    workableConstrains.forEach(workableConstrain => {
+      if (typeof workableConstrain.parsingTreeNode.constrain !== "number" && workableConstrain.parsingTreeNode.constrain) {
+        workableConstrain.parsingTreeNode.constrain = {...workableConstrain.parsingTreeNode.constrain};
+        workableConstrain.parsingTreeNode.constrain.id = 1000000 + parseTrees[0].usageCount + workableConstrain.parsingTreeNode.constrain.id;
+        this._constrainVariableCount.push({
+          constrainId: workableConstrain.parsingTreeNode.constrain.id,
+          constrainVariable: workableConstrain.parsingTreeNode.constrain.variable,
+          count: 0
+        });
+      }
+    })
     const boolArray = parseTrees[0].nodes.map(parseTree => this.parseNonTerminalRec(parseTree, parseString, parseTrees[0].usageCount, workableConstrains))
     workableConstrains.forEach(workableConstrain => this._constrains.push(workableConstrain));
     let result = boolArray.find(x => x);
@@ -254,8 +250,7 @@ export class ParserService {
         }
         if (typeof x.constrain === "number" && x.constrainId && x.constrain !== 0) {
           const myConstrain = workableConstrains.filter(workableConstrain => workableConstrain.parsingTreeNode.constrainId === x.constrainId)[0];
-          if (myConstrain.parsingTreeNode.constrain !== 0 && typeof myConstrain.parsingTreeNode.constrain === "number"){
-            // x.constrain++;
+          if (myConstrain.parsingTreeNode.constrain !== 0 && typeof myConstrain.parsingTreeNode.constrain === "number") {
             myConstrain.parsingTreeNode.constrainTouched = true;
             if (x.parsingTreeNodes[0].value === parsString.slice(slicedParsingString.length, parsString.length).slice(0, x.parsingTreeNodes[0].value.length)) {
               myConstrain.parsingTreeNode.constrain--;
@@ -263,20 +258,32 @@ export class ParserService {
             }
           }
         }
+
+        if (typeof x.constrain !== "number" && x.constrain) {
+          // @ts-ignore
+          const myConstrain = workableConstrains.filter(workableConstrain => workableConstrain.parsingTreeNode.constrain.id === x.constrain.id + 1000000 + usageCounter)[0];
+          this._constrainVariableCount.forEach(constrainVariable => {
+            // @ts-ignore
+            if (myConstrain.parsingTreeNode.constrain.id === constrainVariable.constrainId) {
+              constrainVariable.count++;
+            }
+          });
+          return this.parseNonTerminalRec(x, parsString.slice(slicedParsingString.length, parsString.length), usageCounter, workableConstrains);
+        }
+
         if (typeof x.constrain !== "number") {
           return this.parseNonTerminalRec(x, parsString.slice(slicedParsingString.length, parsString.length), usageCounter, workableConstrains);
         }
         return [{parseString: '', isValid: false}];
       });
       const boolArray: NonTerminalAnswer[] = [];
-      boolArrayTemp.forEach(x =>{
+      boolArrayTemp.forEach(x => {
         x.forEach(y => {
           boolArray.push(y);
         })
       })
       const result = boolArray.filter(({parseString: string, isValid: bool}) => bool)
       if (boolArray.length === 0) {
-        // console.log( parsString.slice(slicedParsingString.length, parsString.length))
         return [{parseString: parsString.slice(slicedParsingString.length, parsString.length), isValid: true}]
       }
       if (result) {
@@ -350,6 +357,25 @@ export class ParserService {
       }
     });
     return parsingTreeNodes.map(x => x.parsingNode);
+  }
+
+  private removeNonTerminalConstrains(){
+    this._constrainVariableCount = this._constrainVariableCount.filter(constrainVariable => {
+
+      for (let i = 0; i < this._nonTerminalTrees.length; i++) {
+        for (let j = 0; j < this._nonTerminalTrees[i].constrains.length; j++) {
+          const constrain = this._nonTerminalTrees[i].constrains[j].parsingTreeNode.constrain;
+          console.log('const')
+          console.log(constrain)
+          if(typeof constrain !== 'number' && constrain){
+            if(constrainVariable.constrainId === constrain.id){
+              return false;
+            }
+          }
+        }
+      }
+      return true;
+    })
   }
 
 }
