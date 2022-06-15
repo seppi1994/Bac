@@ -1,5 +1,5 @@
 <svg:g id="g{{nonTerminal.id}}" attr.transform="translate({{nonTerminal.x}},{{nonTerminal.y}})">
-  <svg:circle id="non-ter-node{{nonTerminal.id}}" class="node" attr.r="{{circleRadius}}" [ngClass]="focus ? 'circle-focus' : 'circle'"></svg:circle>
+  <svg:circle id="non-ter-node{{nonTerminal.id}}" class="node" attr.r="{{circleRadius}}" [ngClass]="focus ? 'circle-focus' : definition ? 'circle-definition' : 'circle'"></svg:circle>
 
   <ng-container *ngIf="editable; else text">
     <svg:foreignObject id="non-ter-ob{{nonTerminal.id}}" x="-19" y="-10" width="48" height="24">

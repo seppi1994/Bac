@@ -156,10 +156,16 @@ export class ParserService {
         if ("name" in x && x.name) {
           const nonTerminalParseResults: NonTerminalAnswer[] = this.parseNonTerminal(parsString.slice(slicedParsingString.length, parsString.length), x.name);
           const res = nonTerminalParseResults.find(nonTerminalParseResult => {
-            return this.parsingRecursion(x, nonTerminalParseResult.parseString)
+            if(nonTerminalParseResult.isValid){
+              const temRes = x.parsingTreeNodes.map(parsNode => this.parsingRecursion(parsNode, nonTerminalParseResult.parseString));
+              const result = temRes.find(x => x)
+              return result ? result : false;
+            }else {
+              return false
+            }
           })
           if (res) {
-            return true
+            return true;
           } else {
             return false;
           }
@@ -231,9 +237,13 @@ export class ParserService {
     })
     const boolArray = parseTrees[0].nodes.map(parseTree => this.parseNonTerminalRec(parseTree, parseString, parseTrees[0].usageCount, workableConstrains))
     workableConstrains.forEach(workableConstrain => this._constrains.push(workableConstrain));
-    let result = boolArray.find(x => x);
-
-    return result ? result : [{parseString: '', isValid: false}];
+    const result: NonTerminalAnswer[] = [];
+    boolArray.forEach(x => x.forEach(y => {
+      if(y.isValid){
+        result.push(y)
+      }
+    }));
+    return result !== [] ? result : [{parseString: '', isValid: false}];
   }
 
   private parseNonTerminalRec(parsingTreeNode: ParsingTreeNode, parsString: string, usageCounter: number, workableConstrains: { parsingTreeNode: ParsingTreeNode; origConstrain: any }[]): NonTerminalAnswer[] {
@@ -241,11 +251,17 @@ export class ParserService {
     if (slicedParsingString === parsingTreeNode.value) {
       const boolArrayTemp: NonTerminalAnswer[][] = parsingTreeNode.parsingTreeNodes.map((x: ParsingTreeNode) => {
         if ("name" in x && x.name) {
+          // debugger
           const parseResults: NonTerminalAnswer[] = this.parseNonTerminal(parsString.slice(slicedParsingString.length, parsString.length), x.name);
           const answer: NonTerminalAnswer[] = [];
           parseResults.forEach(parseResult => {
-            const tempRes = this.parseNonTerminalRec(x, parseResult.parseString, usageCounter, workableConstrains);
-            tempRes.forEach(x => answer.push(x));
+
+            if(parseResult.isValid){
+              const tempRes = x.parsingTreeNodes.map(parsNode => this.parseNonTerminalRec(parsNode, parseResult.parseString, usageCounter, workableConstrains))
+              tempRes.forEach(z => z.forEach(y =>  answer.push(y)));
+            }
+            // const tempRes = this.parseNonTerminalRec(x, parseResult.parseString, usageCounter, workableConstrains);
+
           });
           return answer
         }

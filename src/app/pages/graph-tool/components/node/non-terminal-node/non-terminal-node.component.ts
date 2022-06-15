@@ -19,6 +19,8 @@ export class NonTerminalNodeComponent implements OnInit, AfterViewInit {
   public nonTerminal!: NonTerminalNode;
   @Input()
   public editable!: boolean;
+  @Input()
+  public definition: boolean = false;
 
   private focusElementSub!: Subscription;
 

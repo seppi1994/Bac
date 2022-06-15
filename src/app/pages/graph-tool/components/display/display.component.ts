@@ -61,52 +61,105 @@ export class DisplayComponent implements OnInit {
   private focusElementSub!: Subscription;
   private focusElementId: number = -1;
 
+  // nodes: Node[] = [
+  //   {id: 0, x: 200, y: 225, value: 'Start'},
+  //   {id: 1, x: 450, y: 150, value: '1'},
+  //   // {id: 2, x: 700, y: 150, value:'2'},
+  //   // {id: 3, x: 450, y: 300, value:'3'},
+  //   {id: 4, x: 450, y: 450, value: '3'},
+  //   {id: 5, x: 700, y: 450, value: '4'},
+  //   {id: 6, x: 950, y: 450, value: '5'},
+  //   {id: 7, x: 700, y: 300, value: '2'},
+  // ];
+  // nonTerminals: NonTerminalNode[] = [
+  //   {id: 114, x: 450, y: 300, name: 'S', placeholder: true},
+  //   // {id: 115, x: 200, y: 450, name: 'S', begin: true},
+  //   // {id: 116, x: 1200, y: 450, name: 'var', end: true},
+  //   {id: 120, x: 450, y: 300, name: 'S', placeholder: true},
+  //   {id: 121, x: 450, y: 300, name: 'S', placeholder: true},
+  // ]
+  //
+  // nonTerminalDefinitions: NonTerminalNode[] = [
+  //   {id: 118, x: 200, y: 450, name: 'S', begin: true},
+  //   // {id: 119, x: 1200, y: 450, name: 'var', end: true},
+  // ];
+  //
+  // endNodes: EndNode[] = [
+  //   {id: 227, x: 950, y: 300},
+  //   {id: 228, x: 700, y: 150},
+  //   {id: 229, x: 1200, y: 450},
+  // ]
+  //
+  //
+  //
+  //
+  // edges: Edge[] = [
+  //   {id: 10000, source: this.nodes[0], target: this.nodes[1], left: false, right: true},
+  //   {id: 10001,source: this.nodes[0], target: this.nonTerminals[0], left: false, right: true},
+  //   // {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
+  //   // {source: this.nodes[0], target: this.nodes[3], left: false, right: true},
+  //   {id: 10002,source: this.nonTerminals[0], target: this.nodes[5], left: false, right: true},
+  //   {id: 10003,source: this.nonTerminalDefinitions[0], target: this.nodes[2], left: false, right: true},
+  //   {id: 10004,source: this.nodes[2], target: this.nodes[3], left: false, right: true},
+  //   {id: 10005,source: this.nodes[3], target: this.nodes[4], left: false, right: true},
+  //   {id: 10006,source: this.nodes[4], target: this.endNodes[2], left: false, right: true},
+  //   {id: 10007,source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
+  //   {id: 10008,source: this.nodes[1], target: this.endNodes[1], left: false, right: true},
+  // ];
+  // constrains: Constrain[] = [
+  //   {id: 1000, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
+  //   // {id: 1, source: this.nodes[1], target: this.nodes[1], left: false, right: true, constrain: 'n'},
+  //   // {id: 2, source: this.nodes[3], target: this.nodes[3], left: false, right: true, constrain: 1}
+  // ];
+
   nodes: Node[] = [
-    {id: 0, x: 200, y: 225, value: 'S'},
-    {id: 1, x: 450, y: 150, value: '1'},
-    // {id: 2, x: 700, y: 150, value:'2'},
-    // {id: 3, x: 450, y: 300, value:'3'},
-    {id: 4, x: 450, y: 450, value: '3'},
-    {id: 5, x: 700, y: 450, value: '4'},
-    {id: 6, x: 950, y: 450, value: '5'},
-    {id: 7, x: 700, y: 300, value: '2'},
+    {id: 0, x: 200, y: 225, value: 'Start'},
+    // {id: 1, x: 450, y: 150, value: '1'},
+    // // {id: 2, x: 700, y: 150, value:'2'},
+    // // {id: 3, x: 450, y: 300, value:'3'},
+    {id: 4, x: 450, y: 450, value: 'a'},
+    {id: 5, x: 700, y: 450, value: 'a'},
+    {id: 6, x: 950, y: 600, value: 'b'},
+    {id: 7, x: 700, y: 600, value: 'b'},
   ];
   nonTerminals: NonTerminalNode[] = [
-    {id: 114, x: 450, y: 300, name: 'var', placeholder: true},
-    {id: 115, x: 200, y: 450, name: 'var', begin: true},
+    {id: 114, x: 450, y: 300, name: 'S', placeholder: true},
+    // {id: 115, x: 200, y: 450, name: 'S', begin: true},
     // {id: 116, x: 1200, y: 450, name: 'var', end: true},
-    {id: 120, x: 450, y: 300, name: 'var', placeholder: true},
+    {id: 120, x: 450, y: 350, name: 'S', placeholder: true},
+    {id: 121, x: 450, y: 390, name: 'S', placeholder: true},
   ]
 
-  nonTerminalDefinition: NonTerminalNode[] = [
-    {id: 118, x: 200, y: 450, name: 'var', begin: true},
+  nonTerminalDefinitions: NonTerminalNode[] = [
+    {id: 118, x: 200, y: 450, name: 'S', begin: true},
     // {id: 119, x: 1200, y: 450, name: 'var', end: true},
   ];
 
   endNodes: EndNode[] = [
-    {id: 227, x: 950, y: 300},
+    // {id: 227, x: 950, y: 300},
     {id: 228, x: 700, y: 150},
     {id: 229, x: 1200, y: 450},
+    {id: 230, x: 950, y: 600},
   ]
 
 
 
 
   edges: Edge[] = [
-    {id: 10000, source: this.nodes[0], target: this.nodes[1], left: false, right: true},
+    // {id: 10000, source: this.nodes[0], target: this.nodes[1], left: false, right: true},
     {id: 10001,source: this.nodes[0], target: this.nonTerminals[0], left: false, right: true},
     // {source: this.nodes[1], target: this.nodes[4], left: false, right: true},
-    // {source: this.nodes[0], target: this.nodes[3], left: false, right: true},
-    {id: 10002,source: this.nonTerminals[0], target: this.nodes[5], left: false, right: true},
-    {id: 10003,source: this.nonTerminalDefinition[0], target: this.nodes[2], left: false, right: true},
-    {id: 10004,source: this.nodes[2], target: this.nodes[3], left: false, right: true},
+    {id: 10006,source: this.nonTerminalDefinitions[0], target: this.nodes[3], left: false, right: true},
+    {id: 10002,source: this.nonTerminals[0], target: this.endNodes[0], left: false, right: true},
+    {id: 10003,source: this.nonTerminalDefinitions[0], target: this.nodes[1], left: false, right: true},
+    {id: 10004,source: this.nodes[1], target: this.nodes[2], left: false, right: true},
     {id: 10005,source: this.nodes[3], target: this.nodes[4], left: false, right: true},
-    {id: 10006,source: this.nodes[4], target: this.endNodes[2], left: false, right: true},
-    {id: 10007,source: this.nodes[5], target: this.endNodes[0], left: false, right: true},
-    {id: 10008,source: this.nodes[1], target: this.endNodes[1], left: false, right: true},
+    // {id: 10006,source: this.nodes[4], target: this.endNodes[2], left: false, right: true},
+    {id: 10007,source: this.nodes[4], target: this.endNodes[2], left: false, right: true},
+    {id: 10008,source: this.nodes[2], target: this.endNodes[1], left: false, right: true},
   ];
   constrains: Constrain[] = [
-    {id: 1000, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
+    // {id: 1000, source: this.nodes[5], target: this.nodes[5], left: false, right: true, constrain: 'n'},
     // {id: 1, source: this.nodes[1], target: this.nodes[1], left: false, right: true, constrain: 'n'},
     // {id: 2, source: this.nodes[3], target: this.nodes[3], left: false, right: true, constrain: 1}
   ];
@@ -224,13 +277,13 @@ export class DisplayComponent implements OnInit {
   }
 
   updateParsingTreeAndExample(){
-    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
-    this.makeSecondExample();
-    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals ,this.nonTerminalDefinition);
+    this.example = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinitions);
+    // this.makeSecondExample();
+    this.service.createParsingTree(this.edges, this.constrains, this.nonTerminals ,this.nonTerminalDefinitions);
   }
 
   makeSecondExample(){
-    const result = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinition);
+    const result = this.exampleGenerator.process(this.edges, this.constrains, this.nonTerminals, this.nonTerminalDefinitions);
     if(result === this.example){
       this.makeSecondExample();
     }else {

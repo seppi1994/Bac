@@ -63,6 +63,7 @@
       <g app-edges [edges]="edges"></g>
       <g app-constrain [constrains]="constrains" [editable]="isEditable"></g>
       <g app-non-terminal-node [nonTerminal]="nonTerminal" [editable]="isEditable" (onDoubleClick)="addNewLink(nonTerminal)" *ngFor="let nonTerminal of nonTerminals"></g>
+      <g app-non-terminal-node [nonTerminal]="nonTerminalDefinition" [editable]="isEditable" [definition]="true" (onDoubleClick)="addNewLink(nonTerminalDefinition)" *ngFor="let nonTerminalDefinition of nonTerminalDefinitions"></g>
       <g app-end-node [endNode]="endNode" (onDoubleClick)="addNewLink(endNode)" *ngFor="let endNode of endNodes"></g>
     </svg>
   </div>
